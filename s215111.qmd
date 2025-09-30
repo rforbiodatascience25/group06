@@ -23,19 +23,22 @@ The aims of the report is to determine what characterises the peptides binding t
 ## 3. Load Libraries
 
 ```{r}
-
+#| message: false
+#| warning: false
 library("tidyverse")
-
+library("here")
+library("dplyr")
+library("ggplot2")
+library("readr")
+library("tibble")
 ```
 
 ## 4. Load Data
 
 ```{r}
 
-peptide_data <- read_csv(file = "peptide-detail-ci.csv")
-data_path <- "data/"
-write_csv(x = diabetes_data,
-          file = "data/diabetes.csv")
+peptide_data <- read_csv("./data/peptide-detail-ci.csv")
+meta_data <- read_csv("./data/subject-metadata.csv")
 
 #| echo: true
 #| eval: false 
