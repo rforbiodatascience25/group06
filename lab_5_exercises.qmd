@@ -46,6 +46,14 @@ meta_data |>
 ```
 
 ```{r}
+meta_data
+```
+
+-   **Q1: How many observations of how many variables are in the data?**
+
+    -   There are 144 observations of 30 variables
+
+```{r}
 
 ```
 
