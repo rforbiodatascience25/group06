@@ -31,8 +31,8 @@ library("tibble")
 
 ```{r}
 
-peptide_data <- read_csv("./data/peptide-detail-ci.csv")
-meta_data <- read_csv("./data/subject-metadata.csv")
+peptide_data <- read_csv("../data/peptide-detail-ci.csv")
+meta_data <- read_csv("../data/subject-metadata.csv")
 
 #| echo: true
 #| eval: false 
@@ -52,6 +52,10 @@ meta_data
 -   **Q1: How many observations of how many variables are in the data?**
 
     -   There are 144 observations of 30 variables
+
+-   **Q2: Are there groupings in the variables, i.e. do certain variables “go together” somehow?**
+
+    -   There are 6 HLA allele variables and 16 other HLA allele variables
 
 ```{r}
 
