@@ -1,0 +1,111 @@
+---
+title: "lab_5_exercises"
+format: html
+editor: visual
+---
+
+# Background
+
+In the early 20s, the world was hit by the coronavirus disease 2019 (COVID-19) pandemic. The pandemic was caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). In Denmark, the virus first confirmed case was on 27 February 2020.
+
+While initially very little was known about the SARS-CoV-2 virus, we did know the general pathology of vira. Briefly, the virus invades the cells and hijacks the intra-cellular machinery. Using the hijacked machinery, components for new virus particles are produced, eventually being packed into the viral envelope and released from the infected cell. Some of these components, viral proteins, is broken down into smaller fragments called peptides by the proteasome. These peptides are transported into the endoplasmic reticulum by the Transporter Associated with antigen Processing (TAP) protein complex. Here, they are aided by chaperones bound to the Major Histocompatilibty Complex class I (MHC-I) and then across the Golgi apparatus they finally get displayed on the surface of the cells. Note, in humans, MHC is also called Human Leukocyte Antigen (HLA) and represents the most diverse genes. Each of us have a total of 6 HLA-alleles, 3 from the maternal and 3 from the paternal side. These are further divided into 3 classes HLA-A, HLA-B and HLA-C and the combination of these constitute the HLA-haplotype for an individual. Once the peptide is bound to the MHC class I at the cell surface and exposed, the MHC-I peptide complex can be recognised by CD8+ Cytotoxic T-Lymphocytes (CTLs) via the T-cell Receptor (TCR). If a cell displays peptides of viral origin, the CTL gets activated and via a cascade induces apoptosis (programmed cell death) of the infected cell. The process is summarised in the figure below ([McCarthy and Weinberg 2015](https://r4bds.github.io/references.html#ref-McCarthy2015)).
+
+# Aim
+
+# **Load Libraries**
+
+```{r}
+#| message: false
+#| warning: false
+library("tidyverse")
+library("here")
+library("dplyr")
+library("ggplot2")
+library("readr")
+library("tibble")
+```
+
+# **Load Data**
+
+```{r}
+#| echo: true
+#| eval: false
+peptide_data <- read_csv("../../data/peptide-detail-ci.csv")
+meta_data <- read_csv("../../data/subject-metadata.csv", na = c("", "NA", "N/A", "n/a"))
+
+```
+
+# **Data Description**
+
+To get out information about the data
+
+```{r}
+meta_data |> 
+  slice_sample(n = 10)
+```
+
+```{r}
+meta_data
+```
+
+-   **Q1: How many observations of how many variables are in the data?**
+
+    -   There are 144 observations of 30 variables in the meta data file
+    -   There are 154320 observations and 7 variable in the peptide data file
+
+-   **Q2: Are there groupings in the variables, i.e. do certain variables “go together” somehow?**
+
+    -   Both dataset contain the experiment variable and can be joined on that variable
+
+```{r}
+peptide_data |> 
+  slice_sample(n = 10)
+```
+
+**Task 1: Recreate plot**
+
+Cleaning the data for na values
+
+```{r}
+meta_data_clean <- meta_data |>
+  drop_na(Cohort, Gender)
+```
+
+The x-axis are the cohort information grouped and the y axis are the number of experiments for both females and males individually
+
+```{r}
+ggplot(data = meta_data_clean,
+       mapping = aes(
+         x = Cohort,
+         fill = Gender
+       ))+
+  geom_bar(position = "dodge", color = "black", alpha = 0.6)+
+  labs(x = "Cohort",
+    y = "n",
+    fill = "Gender")+
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 10, hjust = 1),  # tilt labels
+    legend.position = "bottom"
+  )
+
+```
+
+**Task 2: Recreate plot**
+
+The plot are bar plot with age gropus on the x axis and the count on the y axis
+
+First we create a column containing the agegroup data
+
+```{r}
+meta_data_agegroups <- meta_data |>
+  dplyr::mutate(
+    AgeGroup = cut(
+      Age,
+      breaks = c(20, 30, 40, 50, 60, 70, 80),
+      labels = c("(20,30]", "(30,40]", "(40,50]", "(50,60]", "(60,70]", "(70,80]")
+    )
+  )
+```
+
+# Analysis
