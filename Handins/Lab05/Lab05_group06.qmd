@@ -3,3 +3,255 @@ title: "Lab05_group06"
 format: html
 ---
 
+# 1. Background
+
+In the early 20s, the world was hit by the coronavirus disease 2019 (COVID-19) pandemic. The pandemic was caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). In Denmark, the virus first confirmed case was on 27 February 2020.
+
+While initially very little was known about the SARS-CoV-2 virus, we did know the general pathology of vira. Briefly, the virus invades the cells and hijacks the intra-cellular machinery. Using the hijacked machinery, components for new virus particles are produced, eventually being packed into the viral envelope and released from the infected cell. Some of these components, viral proteins, is broken down into smaller fragments called peptides by the proteasome. These peptides are transported into the endoplasmic reticulum by the Transporter Associated with antigen Processing (TAP) protein complex. Here, they are aided by chaperones bound to the Major Histocompatilibty Complex class I (MHC-I) and then across the Golgi apparatus they finally get displayed on the surface of the cells. Note, in humans, MHC is also called Human Leukocyte Antigen (HLA) and represents the most diverse genes. Each of us have a total of 6 HLA-alleles, 3 from the maternal and 3 from the paternal side. These are further divided into 3 classes HLA-A, HLA-B and HLA-C and the combination of these constitute the HLA-haplotype for an individual. Once the peptide is bound to the MHC class I at the cell surface and exposed, the MHC-I peptide complex can be recognised by CD8+ Cytotoxic T-Lymphocytes (CTLs) via the T-cell Receptor (TCR). If a cell displays peptides of viral origin, the CTL gets activated and via a cascade induces apoptosis (programmed cell death) of the infected cell. The process is summarised in the figure below (McCarthy and Weinberg 2015).
+
+![](https://r4bds.github.io/images/mhc_class_I_antigen_presentation_pathway.png){width="432"}
+
+# 2. Aim
+
+In this micro report we'll aim to answer the following two questions concerning T cells and MHCs: 1. What characterises the peptides binding to the HLAs? 2. What characterises T-cell Receptors binding to the pMHC-complexes?
+
+# 3. Load Libraries
+
+```{r}
+library("tidyverse")
+```
+
+# 4. Load Data
+
+Laoding the data and since we created a shared project (on git) already, this script is located in Users/s215098 so i use "../../" to get back to where the data folder is located.
+
+```{r}
+peptide_data <- read_csv(file = "../../data/peptide-detail-ci.csv",
+                         na = c("", "n/a", "N/A", "NA"))
+meta_data <- read_csv(file = "../../data/subject-metadata.csv",
+                      na = c("", "n/a", "N/A", "NA"))
+```
+
+# 5. Data Description
+
+## The Meta Data
+
+Information about the data is easily retrived by using the pipe command (remember short cut: Shift + cmd + m). Here, we're showing the first 10 observations.
+
+```{r}
+meta_data |>
+  slice_sample(n = 10)
+```
+
+**Q1: How many observations of how many variables are in the data?** Using the str() function to find out the structure of the data.
+
+```{r}
+str(meta_data)
+#144 obsercations and 30 variables
+str(peptide_data)
+#154320 observations and 7 variables
+```
+
+**Q2: Are there groupings in the variables, i.e. do certain variables “go together” somehow?**
+
+```{r}
+peptide_data |> 
+  slice_sample(n = 10)
+
+meta_data |> 
+  slice_sample(n = 10)
+```
+
+Yes, both datasets have a column called "Experiment" with the same values.
+
+**T1: Re-create this plot**
+
+![](https://r4bds.github.io/lab05_files/figure-html/unnamed-chunk-5-1.png){width="522"}
+
+The x axis looks like it contains the "Cohorts" of the meta_data. And then y is the number of patients in each cohort. The plot is colored based on gender
+
+```{r}
+meta_data_clean <- meta_data |> 
+  drop_na(Gender, Cohort, Age)
+
+ggplot(data = meta_data_clean,
+       mapping = aes(
+         x = Cohort,
+         fill = Gender)) + 
+  geom_bar(position = "dodge",
+           color= "black",
+           alpha = 0.5) +
+theme_minimal() +
+theme(
+  axis.text.x = element_text(angle = 10, hjust = 0.8, size = 7),
+  axis.title.x = element_text(size = 9),
+  legend.position = "bottom"
+) +
+labs(
+  y = "n"
+)
+```
+
+**T2: Re-create this plot**
+
+![](https://r4bds.github.io/lab05_files/figure-html/unnamed-chunk-6-1.png){width="598"}
+
+```{r}
+meta_data_clean |> 
+  mutate(
+    Age_group = cut(Age,
+                    breaks = c(20, 30, 40, 50, 60, 70, 80),
+                    labels = c("[20,30]", "[30,40]", "[40,50]", "[50,60]", "[60,70]", "[70,80]")
+    )
+  ) |> 
+  ggplot(mapping = aes(
+           x = Age_group,
+           fill = Gender)) + 
+    geom_bar(position = "dodge",
+             color= "black",
+             alpha = 0.5) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 8),
+    axis.title.x = element_text(size = 10, vjust = 0.1),
+    legend.position = "bottom"
+  ) +
+  labs(
+    y = "n"
+  )
+```
+
+**T3: Look at the data and create yet another plot as you see fit. Also skip the redundant variables `Subject`, `Cell Type` and `Target Type`**
+
+To investigate how many of each gender is in another column, first i use the slice function to see what other variables are available.
+
+```{r}
+
+slice_sample(meta_data_clean, n = 10)
+```
+
+I'll look into "Race" and make sure to drop na's again. And fix the long name of the "Native Hawaiian or Other Pacific Islander" to a shorter "Hawaiian / Pacific Islander"
+
+```{r}
+meta_data_race <- meta_data_clean |> 
+  drop_na(Race) |> 
+  mutate(
+    Race = case_when(
+      Race == "Native Hawaiian or Other Pacific Islander" ~ "Hawaiian/Pacific Islander",
+      TRUE ~ Race # keep all other values unchanged
+    )
+  )
+
+ggplot(data = meta_data_race,
+       mapping = aes(
+         x = Race,
+         fill = Gender)) + 
+  geom_bar(position = "dodge",
+           color= "black",
+           alpha = 0.5) +
+theme_minimal() +
+theme(
+  axis.text.x = element_text(size = 7, angle = 10),
+  axis.title.x = element_text(size = 10, vjust = 2),
+  legend.position = "bottom"
+) +
+labs(
+  y = "n"
+)
+
+
+```
+
+From the exercises using table1 - Dynamic reporting
+
+```{r}
+library("table1") # <= Yes, this should normally go at the beginning!
+meta_data |>
+  mutate(Gender = factor(Gender),
+         Cohort = factor(Cohort)) |>
+  table1(x = formula(~ Gender + Age + Race | Cohort),
+         data = _)
+```
+
+**T4: Create a new version of the `meta_data`, which with respect to allele-data only contains information on class I and also fix the odd naming, e.g. `HLA-A...9`becomes `A1` oand `HLA-A...10` becomes `A2` and so on for `B1`, `B2`, `C1` and `C2`(Think: How can we `rename` variables? And here, just do it “manually” per variable). Remember to assign this new data to the same `meta_data` variable**
+
+Again, just to get an overview of the column names
+
+```{r}
+meta_data_race |> 
+  slice_sample(n = 10)
+```
+
+Now, we'll filter away the columns starting with D...-A (not class I) with select() and then rename the variables with rename() (using a lookup vector)
+
+```{r}
+lookup <- c(A1 = "HLA-A...9",
+            A2 = "HLA-A...10",
+            B1 = "HLA-B...11",
+            B2 = "HLA-B...12",
+            C1 = "HLA-C...13",
+            C2 = "HLA-C...14")
+
+meta_data_class1 <- meta_data_race |>
+  select(!starts_with("D")) |> 
+  rename(all_of(lookup))
+
+meta_data_class1
+```
+
+## The Peptide Details Data
+
+```{r}
+peptide_data |> 
+  slice_sample(n = 10)
+```
+
+**Q3: How many observations of how many variables are in the data?**
+
+From the output above, we can state that there are 10 observations and 7 variables in the peptide dataset.
+
+To adress the rather large dataset peptide_data, we'll zip it and work with that from now on.
+
+```{r}
+write_csv(x = peptide_data,
+          file = "../../data/peptide-detail-ci.csv.gz")
+```
+
+OBS!!! Mangler at slette filen (det står der i opgaven man skal), men så kan i andre ikke loade den, så jeg har ikke gjort endnu
+
+To delete the file from command line:
+
+```{r}
+file.remove("../../data/peptide-detail-ci.csv")
+```
+
+### Load the data from a zip file
+
+To load data from zipped file instead of from csv as done earlier:
+
+```{r}
+peptide_data_gz <- read_csv(file = gzfile("../../data/peptide-detail-ci.csv.gz"),
+                         na = c("", "n/a", "N/A", "NA"))
+```
+
+**T5: As before, let’s immediately subset the `peptide_data` to the variables of interest: `TCR BioIdentity`, `Experiment` and `Amino Acids`. Remember to assign this new data to the same `peptide_data` variable to avoid cluttering your environment with redundant variables. Bonus: Did you know you can click the `Environment` pane and see which variables you have?**
+
+Subsetting the data columns with the select() function
+
+```{r}
+
+peptide_data_gz <- peptide_data_gz |> 
+  select(
+    `TCR BioIdentity`,
+    `Experiment`,
+    `Amino Acids`
+  )
+
+peptide_data_gz
+```
+
+**Q4: Is this tidy data? Why/why not?**
+
+The data doesn't appear tidy, since it only fulfills two of the three criteria. Each row is an observation and each column is a variable, however it looks like there could be several values in the TCR Bioidentity and the Amino acid columns depending on how they are defined.
+
+**T6: See if you can find a way to create the below data, from the above**
