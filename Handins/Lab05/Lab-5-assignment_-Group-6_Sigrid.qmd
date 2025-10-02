@@ -65,9 +65,9 @@ We import the two source files from `data/` and standardise common missing value
 
 ```{r}
 
-data_path <- "data/"
+data_path <- "../../data/"
 
-peptide_data <- read_csv(file.path(data_path, "peptide-detail-ci.csv"), , na = c("", "NA", "N/A","n/a"))
+peptide_data <- read_csv(file.path(data_path, "peptide-detail-ci.csv.gz"), , na = c("", "NA", "N/A","n/a"))
 meta_data    <- read_csv(file.path(data_path, "subject-metadata.csv"), na = c("", "NA", "N/A","n/a"))
 
 #| echo: true 
@@ -78,9 +78,9 @@ meta_data    <- read_csv(file.path(data_path, "subject-metadata.csv"), na = c(""
 
 There are two data sets, the subject-meta-data and the peptide-details-data.
 
-The subject-meta-data table has per-experiment details (cohort, age, gender, race) and HLA class I typing (HLA-A, HLA-B, HLA-C; two alleles per locus). The peptide-detail-data has the TCR identity (from which the CDR3β sequence comes) and the peptide sequence(s) recognised in each experiment Both tables use `Experiment` as the shared ID.
+The subject-meta-data table has per-experiment details (cohort, age, gender, race) and HLA class I typing (HLA-A, HLA-B, HLA-C; two alleles per locus). The peptide-detail-data has the TCR identity (from which the CDR3β sequence comes) and the peptide sequence(s) recognised in each experiment. Both tables use `Experiment` as the shared ID.
 
-### 5.1 The subject-meta-data 
+### 5.1 The subject-meta-data
 
 The sample below shows the main columns: *Experiment*, *Cell Type*, *Target Type*, *Cohort*, *Age*, *Gender*, *Race*, and the HLA class-I columns. The HLA columns are wide: each locus has two separate allele columns. The HLA columns appear in a wide layout with separate fields for each allele.
 
@@ -98,7 +98,7 @@ meta_data |>
 
 ### 5.2 The peptide-detail-data
 
-The peptide-detall-data links each Experiment to a T-cell receptor and the peptide sequence(s) it recognises. The column TCR BioIdentity is a single, composite string that encodes the CDR3β sequence together with its V- and J-gene labels, separated by "+" signs. The column Amino Acids holds the recognised peptide sequence. In some rows this field contains several peptides stored as a comma-separated list. Additional columns provide the TCR nucleotide sequence, the extent of ORF coverage, and genomic start/end indices.
+The peptide-detail-data links each Experiment to a T-cell receptor and the peptide sequence(s) it recognises. The column TCR BioIdentity is a single, composite string that encodes the CDR3β sequence together with its V- and J-gene labels, separated by "+" signs. The column Amino Acids holds the recognised peptide sequence. In some rows this field contains several peptides stored as a comma-separated list. Additional columns provide the TCR nucleotide sequence, the extent of ORF coverage, and genomic start/end indices.
 
 The table view below shows these raw fields, including the composite `TCR BioIdentity` and the possibly comma-separated `Amino Acids`. The dataset contains 154.320 observations across these variables before any tidying.
 
@@ -143,7 +143,7 @@ peptide_data <- peptide_data |>
 
 **Dividing the TCR BioIdentity column**
 
-In the raw data, `TCR BioIdentity` stores three pieces of information in a single string (CDR3β sequence, V gene, J gene) separated by “+”. Since motif analysis requires CDR3β as its own sequence variable, we split this column into `CDR3b`, `V_gene`, and `J_gene`.
+In the raw data, `TCR BioIdentity` stores three pieces of information in a single string (CDR3β sequence, V gene, J gene) separated by “+”. Since motif analysis requires CDR3β as its own sequence variable, we split this column into `CDR3b`, `V_gene`, and `J_gene`. This operation also secures that our data is tidy.
 
 ```{r}
 peptide_data <- peptide_data |> 
@@ -156,7 +156,7 @@ peptide_data <- peptide_data |>
 
 **Quantify peptides per row**
 
-`Amino Acids` can contain several peptides separated by commas. Counting them provides a quick check on multiplicity and tells us how much the row count will grow once each peptide is placed on its own row.
+The `Amino Acids` columncan contain several peptides separated by commas. Counting them provides a quick check on multiplicity and tells us how much the row count will grow once each peptide is placed on its own row.
 
 ```{r}
 
@@ -383,10 +383,10 @@ We address both questions with sequence logos. To keep logos comparable across s
 We record sequence lengths for CDR3β and peptides to use as filters in the logo analyses.
 
 ```{r}
-peptide_data <- peptide_data |> 
+peptide_meta_data <- peptide_meta_data |> 
   mutate(k_CDR3b = str_length(CDR3b),
          k_peptide = str_length(peptide))
-peptide_data
+peptide_meta_data
 ```
 
 **CDR3β length**
@@ -394,7 +394,7 @@ peptide_data
 CDR3β length varies but typically clusters tightly. The histogram below shows the distribution in this dataset.
 
 ```{r}
-pl <- peptide_data |> 
+pl <- peptide_meta_data |> 
   ggplot(aes(x = k_CDR3b)) +
   geom_histogram(binwidth = 1,
                  colour = "black",
@@ -407,7 +407,7 @@ pl
 The most frequent (modal) CDR3β length is 15 amino acids; using this length avoids mixing different loop sizes and gives a clearer CDR3β motif.
 
 ```{r}
-CDR3b_length <- peptide_data |> 
+CDR3b_length <- peptide_meta_data |> 
   count(k_CDR3b, sort = TRUE) |> 
   slice(1) |> 
   pull(k_CDR3b)
@@ -420,7 +420,7 @@ CDR3b_length
 HLA class I ligands are typically 8–11 residues. The distribution show that in this dataset 9-mers are most common.
 
 ```{r}
-pl <- peptide_data |> 
+pl <- peptide_meta_data |> 
   ggplot(aes(x = k_peptide)) +
   geom_histogram(binwidth = 1,
                  colour = "black",
@@ -432,7 +432,7 @@ pl
 
 ```{r}
 
-length_peptide <- peptide_data |> 
+length_peptide <- peptide_meta_data |> 
   count(k_peptide, sort = TRUE) |> 
   slice(1) |> 
   pull(k_peptide)
@@ -456,7 +456,8 @@ pl <- peptide_meta_data |>
   select(peptide) |>
   distinct() |>
   pull(peptide) |>
-  ggseqlogo()
+  ggseqlogo()+
+  labs(title = "Sequence logo for A02:01 peptides")
 
 pl
 ```
@@ -471,11 +472,12 @@ pl <- peptide_meta_data |>
   select(peptide) |>
   distinct() |>
   pull(peptide) |>
-  ggseqlogo()
+  ggseqlogo()+
+  labs(title = "Sequence logo for B07:02 peptides")
 pl
 ```
 
-In both cases the logo height at a given position reflects how conserved that position is across peptides. Consistent with class-I binding, positions 2 and 9 show strong conservation (anchor positions), with a preference for hydrophobic residues that engage the HLA binding pockets. Thereby, positions 2 and 9 determines the binding to HLA for peptides of a length of 9 amino acids.
+In both cases the logo height at a given position reflects how conserved that position is across peptides. Consistent with class-I binding, positions 2 and 9 show strong conservation (anchor positions), with a preference for hydrophobic residues, like Lysine (L), Valine (V) and Tyrosine (Y), that engage the HLA binding pockets. Thereby, positions 2 and 9 determines the binding to HLA for peptides of a length of 9 amino acids.
 
 ### 6.3 CDR3b-sequences binding to pMHC
 
