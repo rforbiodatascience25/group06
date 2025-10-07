@@ -80,6 +80,7 @@ double_the_value(value = x)
 ```
 
 Using the function:
+The result can be "catched" by asssigning it to a vairalbe
 
 ```{r}
 y <- double_the_value(value = x)
