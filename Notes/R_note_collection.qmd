@@ -3,6 +3,8 @@ title: "R note collection - 2025"
 format: html
 ---
 
+# Loading data
+
 # Data wrangling
 
 ## Join
@@ -13,4 +15,17 @@ Joins everything in the first dataset, that is not overlapping with the second d
 
 ```{r}
 anti_join(X, Y, by = "id")
+```
+
+## Table 1 - cohort presentation
+
+The table 1 command creates the classic table known from scientific papers as one of the first tables, which presents the cohort and its characteristics like gender, age etc.
+
+```{r}
+library("table1") # <= Yes, this should normally go at the beginning!
+meta_data |>
+  mutate(Gender = factor(Gender),
+         Cohort = factor(Cohort)) |>
+  table1(x = formula(~ Gender + Age + Race | Cohort),
+         data = _)
 ```
