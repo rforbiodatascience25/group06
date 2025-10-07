@@ -6,8 +6,6 @@ format:
 editor: visual
 ---
 
-# Lab 5 assignment: Group 6
-
 ## **Info**
 
 **Group number:** 06
@@ -103,7 +101,7 @@ The peptide-detail-data links each Experiment to a T-cell receptor and the pepti
 The table view below shows these raw fields, including the composite `TCR BioIdentity` and the possibly comma-separated `Amino Acids`. The dataset contains 154.320 observations across these variables before any tidying.
 
 ```{r}
-View(peptide_data)
+#View(peptide_data)
 ```
 
 ```{r}
@@ -215,7 +213,7 @@ pl
 Because peptides are stored as comma-separated strings, the list is first split across temporary columns (`peptide_1 … peptide_max`). Rows with fewer peptides naturally get `NA` in unused positions.
 
 ```{r}
-
+#| warning: false
 peptide_data <- peptide_data |> 
   separate(col = `Amino Acids`,
            into = str_c("peptide_", 1:max_n_peptides),
@@ -394,6 +392,7 @@ peptide_meta_data
 CDR3β length varies but typically clusters tightly. The histogram below shows the distribution in this dataset.
 
 ```{r}
+#| warning: false
 pl <- peptide_meta_data |> 
   ggplot(aes(x = k_CDR3b)) +
   geom_histogram(binwidth = 1,
@@ -420,6 +419,7 @@ CDR3b_length
 HLA class I ligands are typically 8–11 residues. The distribution show that in this dataset 9-mers are most common.
 
 ```{r}
+#| warning: false
 pl <- peptide_meta_data |> 
   ggplot(aes(x = k_peptide)) +
   geom_histogram(binwidth = 1,
@@ -522,6 +522,7 @@ pl
 For a specific observation of the data set, the logo plot will show a total conservation across all amino acid positions. This example is for the specific CDR3b allele B58:01 with a length of 16 and the peptide ADAGFIKQY.
 
 ```{r}
+#| warning: false
 pl <- peptide_meta_data |>
   filter(k_CDR3b == 16,
          Allele == "B58:01",

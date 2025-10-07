@@ -54,6 +54,32 @@ meta_data |>
          data = _)
 ```
 
+# Data visualisation
+
+# Functional programming
+
+To make functional programming you are using the purrr package (which is a part of tidyverse). The advantage of functional programming is that you can define a function one time and if you have to make changes it only needs to be changed once.
+
+## Double a value
+
+Creating the function:
+
+```{r}
+double_the_value <- function(value){
+  return( 2*value )
+}
+
+x <- 2
+double_the_value(value = x)
+```
+
+Using the function:
+
+```{r}
+y <- double_the_value(value = x)
+y
+```
+
 # Different general commands
 
 ### Separator
