@@ -27,7 +27,18 @@ Packages that are a part of tidyverse:
 
 # Loading data
 
-Mangler lige at loade data ind, så vi kan køre chunksne
+```{r}
+library("ggplot2")
+library("dplyr")
+library("tidyr")
+library("readr")
+library("purrr")
+library("tibble")
+library("stringr")
+library("forcats")
+library("lubridate")
+```
+
 
 # Data wrangling
 
