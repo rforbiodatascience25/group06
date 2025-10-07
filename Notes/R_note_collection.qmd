@@ -30,6 +30,26 @@ meta_data |>
          data = _)
 ```
 
+# Functional programming
+
+## Call functions on objects
+
+```{r}
+double_the_value <- function(value){
+  return( 2*value )
+}
+
+x <- 2
+double_the_value(value = x)
+```
+
+The result can be "catched" by assigning it to a variable
+
+```{r}
+y <- double_the_value(value = x)
+y
+```
+
 # Different commands
 
 ### Separator
