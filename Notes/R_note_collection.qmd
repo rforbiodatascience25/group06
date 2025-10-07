@@ -29,3 +29,13 @@ meta_data |>
   table1(x = formula(~ Gender + Age + Race | Cohort),
          data = _)
 ```
+
+# Different commands
+
+### Separator
+
+When you want to actually separate where the '+' is placed and not on the meaning of the '+', you need to specify it with an escape '\\\\'.
+
+```{r}
+sep = "\\+" 
+```
