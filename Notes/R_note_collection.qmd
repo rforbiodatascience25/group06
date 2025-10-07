@@ -32,7 +32,7 @@ meta_data |>
          data = _)
 ```
 
-# Different commands
+# Different general commands
 
 ### Separator
 
