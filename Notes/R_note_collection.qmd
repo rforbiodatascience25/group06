@@ -5,6 +5,8 @@ format: html
 
 # Loading data
 
+Mangler lige at loade data ind, så vi kan køre chunksne
+
 # Data wrangling
 
 ## Join
