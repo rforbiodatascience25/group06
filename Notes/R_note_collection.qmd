@@ -3,6 +3,28 @@ title: "R note collection - 2025"
 format: html
 ---
 
+# Loading packages
+
+## Tidyverse
+
+*Description of tidyverse...*
+
+```{r}
+library("tidyverse")
+```
+
+Packages that are a part of tidyverse:
+
+-   `ggplot2`
+-   `dplyr`
+-   `tidyr`
+-   `readr`
+-   `purrr`
+-   `tibble`
+-   `stringr`
+-   `forcats`
+-   `lubridate`
+
 # Loading data
 
 Mangler lige at loade data ind, så vi kan køre chunksne
