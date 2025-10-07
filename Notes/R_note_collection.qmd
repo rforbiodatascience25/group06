@@ -1,0 +1,16 @@
+---
+title: "R note collection - 2025"
+format: html
+---
+
+# Data wrangling
+
+## Join
+
+### Anti join
+
+Joins everything in the first dataset, that is not overlapping with the second dataset
+
+```{r}
+anti_join(X, Y, by = "id")
+```
