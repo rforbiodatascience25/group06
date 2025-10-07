@@ -33,6 +33,12 @@ Mangler lige at loade data ind, så vi kan køre chunksne
 
 ## Join
 
+### Full join
+
+### Inner join
+
+### Right/left join
+
 ### Anti join
 
 Joins everything in the first dataset, that is not overlapping with the second dataset
