@@ -39,3 +39,12 @@ When you want to actually separate where the '+' is placed and not on the meanin
 ```{r}
 sep = "\\+" 
 ```
+
+## Slice sample
+
+Takes out a specific number of rows from the dataset but randomly. If you only view the top or the bottom there is a risk that the data are sorted and you will only get a wrong understanding of the trend in the data. By using slice_sample you get random rows and you might get a better understanding of the data.
+
+```{r}
+meta_data |>
+  slice_sample(n = 10)
+```
