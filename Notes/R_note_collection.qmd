@@ -97,6 +97,8 @@ y <- double_the_value(value = x)
 y
 ```
 
+
+
 # Different general commands
 
 ### Separator
