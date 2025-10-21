@@ -1,0 +1,249 @@
+---
+title: "lab_6_exercises"
+format: html
+---
+
+```{r}
+library(tidyverse)
+```
+
+# Load data
+
+#### T1: **Create a new “Load Data” header in your document and add the below chunk:**
+
+```{r}
+raw_dir <- "data/"
+data_file <- "gravier.RData"
+data_loc <- "https://github.com/ramhiser/datamicroarray/raw/master/data/"
+
+if( !dir.exists(raw_dir) ){
+  dir.create(path = raw_dir)
+}
+if( !file.exists(str_c(raw_dir, data_file)) ){
+  download.file(
+    url = str_c(data_loc, data_file),
+    destfile = str_c(raw_dir, data_file))
+}
+load(file = str_c(raw_dir, data_file))
+```
+
+#### Q1: In your group, discuss, what is going on here? Make sure you follow the difference between the first time you run this and the second!
+
+-   The first time it checks if the data folder and data file exist, if they do not, it creates the folder and the file. The second time, it loads the data.
+
+# Clean Data
+
+```{r}
+ls()
+```
+
+```{r}
+ls(gravier)
+```
+
+```{r}
+str(gravier)
+```
+
+#### Q2: Discuss in your group if this is tidy data?
+
+-   It is not tidy data, as there are multiple observarions in one variable.
+
+#### **T2: Create a new “Clean Data” header in your document and add the below chunk:**
+
+```{r}
+gravier_clean <- gravier |>
+  bind_cols() |>
+  as_tibble()
+
+gravier_clean
+```
+
+#### Q3: Discuss in your group if this is tidy data?
+
+-   This is tidy data. The observations have been separated into distinct variables.
+
+#### Q4: **In fact, specifically state what are the “rules” for tidy data?**
+
+-   Every column is a variable.
+
+-   Every row is an observation.
+
+-   Every cell is a single value.
+
+#### Q5: **In your group, discuss why `bind_cols` can be *very very* dangerous to use?**
+
+-   
+
+#### **T3: In your “Clean Data”-section, add a new chunk, where you write a tab-separated-values gzipped (i.e. compressed) file called “02_gravier_clean” (with the correct file type specification) into your “data”-folder**
+
+```{r}
+gravier_clean |>
+  write_tsv("./data/02_gravier_clean.tsv.gz")
+```
+
+`gravier_clean |>` means that the data from this variable is the data frame to be used in the write function. Thereby we do not need to put the data frame as an argument.
+
+# Augment Data
+
+#### **T4: Create a new “Augment Data” header in your document and add the below chunk:**
+
+```{r}
+gravier_clean_aug <- gravier_clean |>
+  mutate(y = case_when(y == "poor" ~ 1,
+                       y == "good" ~ 0)) |> 
+  relocate(early_metastasis = y)
+```
+
+#### **Q6: In your group, discuss, what each step of the above work flow does, i.e. what are the specifics of the `dplyr` pipeline?**
+
+-   Mutate is here used the column `y`, by changing "poor" observations to 1 and "good" observations to 0.
+
+-   Relocate moves the `y` column to the front and then renames `early_metastasis`.
+
+-   After this workflow, there will be a new column in the `gravier_clean_aug` data frame called `early_metastasis`. This column contains either a 1 or a 0.
+
+#### T5: **In your “Augment Data”-section, add a new chunk, where you write a tab-separated-values gzipped (i.e. compressed) file called “03_gravier_clean_aug” (with the correct file type specification) into your “data” folder**
+
+```{r}
+gravier_clean_aug |>
+  write_tsv("./data/03_gravier_clean_aug.tsv.gz")
+```
+
+# Analysis
+
+## One Gene, one model
+
+#### T6: **Create a new “Analysis” header in your document**
+
+Done
+
+#### T7: **Use the `lm()` function to create your first model and save it to a new variable e.g. “my_first_model”**
+
+Hint: *Use the formula `my_favourite_gene ~ early_metastasis` and remember when you pipe into the `lm()` function, you have to specify `data = _`*
+
+```{r}
+my_first_model <- gravier_clean_aug |>
+  lm(formula = g2E09 ~ early_metastasis,
+     data = _)
+
+my_first_model
+```
+
+#### Q7: **What are your coefficients?**
+
+```         
+Coefficients:
+     (Intercept)  early_metastasis  
+        -0.01616          -0.03426  
+```
+
+#### T**8: Use the `group_by()` -\> `summarise()` workflow to calculate the mean values of the gene expression for your favourite gene stratified on `early_metastasis`**
+
+```{r}
+gravier_clean_aug |>
+  group_by(early_metastasis) |>
+  summarise(mu = mean(g2E09))
+```
+
+#### **Q8: What are your mean values?**
+
+See above
+
+#### Q9: **Discuss in your group: How are your coefficients related to your mean expression values?**
+
+-   
+
+#### Q**10: Discuss in your group: Is your gene up- or down-regulated from `early_metastasis = 0` to `early_metastasis = 1` and use the `summary()` function to see if is it statistically significant at a level of significance of ?**
+
+-   
+
+## All the Genes, all the models
+
+#### Q**11: How many genes are there in the gravier data set?**
+
+-   
+
+## Models, models everywhere…
+
+### Preparing the Data
+
+#### Q**12: Discuss in your group, if the `gravier_clean_aug` is a “wide” or a “long” dataset?**
+
+-   
+
+#### T**9: Create this long version of your `gravier_clean_aug` data and save it in `gravier_clean_aug_long`**
+
+```{r}
+gravier_clean_aug_long <- gravier_clean_aug |>
+  pivot_longer(cols = starts_with("g"),
+               names_to = "gene",
+               values_to = "log2_expr_level")
+
+gravier_clean_aug_long
+```
+
+#### **T10: Create a `dplyr` pipeline, use the `group_by()` function to group your `gravier_clean_aug_long` dataset by `gene` and then add the `nest()` and `ungroup()` functions to your pipeline**
+
+```{r}
+gravier_clean_aug_long_nested <- gravier_clean_aug_long |>
+  group_by(gene) |>
+  nest() |>
+  ungroup()
+
+gravier_clean_aug_long_nested
+```
+
+#### **Q13: Discuss in your group, what happened to the data?**
+
+-   
+
+#### Q**14: Moreover, discuss in your group, what does `<tibble [168 × 2]>` mean?**
+
+-   
+
+### Fitting Models
+
+#### T**11: Use the `group_by()` function to let `R` know, that we want to work *per* gene**
+
+```{r}
+gravier_clean_aug_long_nested |>
+  group_by(gene)
+```
+
+#### **T12: Then using the `map()`-function, add a new line to your pipeline, where you add a new variable `model_object` to your `gravier_clean_aug_long_nested` dataset, which `R` will compute *per* gene**
+
+```{r}
+gravier_clean_aug_long_nested <- gravier_clean_aug_long_nested |>
+  mutate(model_object = map(.x = data,
+                            .f = ~lm(formula = log2_expr_level ~ early_metastasis,
+                                     data = .x)))
+```
+
+```{r}
+gravier_clean_aug_long_nested |>
+  filter(gene == "g2E09") |> # Replace "g2E09" with whatever was YOUR favourite gene!
+  pull(model_object)
+```
+
+### Tidying Models
+
+```{r}
+gravier_clean_aug_long_nested |>
+  
+  # Here, you should replace "g2E09" with whatever was YOUR favourite gene!
+  filter(gene == "g2E09") |> 
+  
+  # Pull() on tibbles: This pulls out the model_object variable.
+  #   Note! This is a list, because we nested!
+  pull(model_object) |> 
+  
+  # Pluck() on lists: From the list we got from the last step,
+  #   we "pluck" the first element
+  pluck(1) |>
+  
+  # The result of pluck, is a model object,
+  #   upon which we can call the tidy function
+  tidy(conf.int = TRUE,
+       conf.level = 0.95)
+```
