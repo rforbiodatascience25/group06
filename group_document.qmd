@@ -11,11 +11,12 @@ Hello guys
 # s215063
 =======
 # s215063 - Mathilde
+
 Some R code
 >>>>>>> 1385408e048e66ef476c3f4e6f5c2aeaea263563
 
-# s215067
+# s215067 - Alberte
 
-# s215111
+# s215111 . Line
 
-# s205875
+# s205875 - Sigrid
