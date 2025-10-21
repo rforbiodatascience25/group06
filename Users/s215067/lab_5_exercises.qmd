@@ -31,8 +31,8 @@ library("tibble")
 
 ```{r}
 
-peptide_data <- read_csv("../data/peptide-detail-ci.csv")
-meta_data <- read_csv("../data/subject-metadata.csv")
+peptide_data <- read_csv("../../data/peptide-detail-ci.csv")
+meta_data <- read_csv("../../data/subject-metadata.csv")
 
 #| echo: true
 #| eval: false 
@@ -49,16 +49,73 @@ meta_data |>
 meta_data
 ```
 
+```{r}
+peptide_data
+```
+
 -   **Q1: How many observations of how many variables are in the data?**
 
-    -   There are 144 observations of 30 variables
+    -   Metadata: There are 144 observations of 30 variables
+    -   Peptide data: There are 154320 observations and 7 variables
 
 -   **Q2: Are there groupings in the variables, i.e. do certain variables “go together” somehow?**
 
     -   There are 6 HLA allele variables and 16 other HLA allele variables
 
 ```{r}
+pl1 <- meta_data |> 
+ggplot(aes(x = Cohort,
+  fill = Gender)) +
+  
+  labs(x = "Cohort",
+       fill = "Gender") +
+  
+  theme(plot.title = element_text(size = 13)) + 
+  
+  geom_histogram()
 
+pl1
+```
+
+```{r}
+pl1 <- meta_data |>
+  
+  ggplot(aes(x = Cohort, 
+             fill = Gender)) +
+  
+  labs(x = "Cohort", y = "n", fill = "Gender") +
+  
+  theme_minimal(base_size = 13) +
+  
+  theme(
+    plot.title = element_text(size = 13),
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 15, hjust = 1, vjust = 1)
+  ) +
+  
+  geom_bar(na.rm = TRUE, 
+         position = position_dodge(width = 0.9), 
+         colour = "black",
+         alpha = 0.5)
+
+pl1
+```
+
+```{r}
+
+pl1 <- meta_data %>%
+  filter(!is.na(Cohort), !is.na(Gender)) %>%     # remove NA rows
+  ggplot(aes(x = Cohort, fill = Gender)) +
+  geom_bar(position = position_dodge(0.9), colour = "black") +
+  labs(x = "Cohort", y = "n", fill = "Gender") +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(size = 13),
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 15, hjust = 1, vjust = 1)
+  )
+
+pl1
 ```
 
 # Analysis

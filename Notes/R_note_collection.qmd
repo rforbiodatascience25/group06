@@ -1,0 +1,119 @@
+---
+title: "R note collection - 2025"
+format: html
+---
+
+# Loading packages
+
+## Tidyverse
+
+*Description of tidyverse...*
+
+```{r}
+library("tidyverse")
+```
+
+Packages that are a part of tidyverse:
+
+-   `ggplot2`
+-   `dplyr`
+-   `tidyr`
+-   `readr`
+-   `purrr`
+-   `tibble`
+-   `stringr`
+-   `forcats`
+-   `lubridate`
+
+# Loading data
+
+```{r}
+library("ggplot2")
+library("dplyr")
+library("tidyr")
+library("readr")
+library("purrr")
+library("tibble")
+library("stringr")
+library("forcats")
+library("lubridate")
+```
+
+
+# Data wrangling
+
+## Join
+
+### Full join
+
+### Inner join
+
+### Right/left join
+
+### Anti join
+
+Joins everything in the first dataset, that is not overlapping with the second dataset
+
+```{r}
+anti_join(X, Y, by = "id")
+```
+
+## Table 1 - cohort presentation
+
+The table 1 command creates the classic table known from scientific papers as one of the first tables, which presents the cohort and its characteristics like gender, age etc.
+
+```{r}
+library("table1") # <= Yes, this should normally go at the beginning!
+meta_data |>
+  mutate(Gender = factor(Gender),
+         Cohort = factor(Cohort)) |>
+  table1(x = formula(~ Gender + Age + Race | Cohort),
+         data = _)
+```
+
+# Data visualisation
+
+# Functional programming
+
+To make functional programming you are using the purrr package (which is a part of tidyverse). The advantage of functional programming is that you can define a function one time and if you have to make changes it only needs to be changed once.
+
+## Double a value
+
+Creating the function:
+
+```{r}
+double_the_value <- function(value){
+  return( 2*value )
+}
+
+x <- 2
+double_the_value(value = x)
+```
+
+Using the function: The result can be "catched" by asssigning it to a vairalbe
+
+```{r}
+y <- double_the_value(value = x)
+y
+```
+
+
+
+# Different general commands
+
+### Separator
+
+When you want to actually separate where the '+' is placed and not on the meaning of the '+', you need to specify it with an escape '\\\\'.
+
+```{r}
+sep = "\\+" 
+```
+
+## Slice sample
+
+Takes out a specific number of rows from the dataset but randomly. If you only view the top or the bottom there is a risk that the data are sorted and you will only get a wrong understanding of the trend in the data. By using slice_sample you get random rows and you might get a better understanding of the data.
+
+```{r}
+meta_data |>
+  slice_sample(n = 10)
+```
