@@ -8,8 +8,8 @@ format: html
 # s215063 - Mathilde
 Some R code
 
-# s215067
+# s215067 - Alberte 
 
-# s215111
+# s215111 . Line
 
-# s205875
+# s205875 - Sigrid 
