@@ -5,9 +5,6 @@ format: html
 
 # s215098 - Kris
 
-<<<<<<< HEAD
-Hello guys
-
 # s215063
 =======
 # s215063 - Mathilde
