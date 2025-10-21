@@ -15,6 +15,10 @@ Some R code
 
 # s215111 - Line
 
+#### New features or new analysis 
+
+Adding a few code chunks with a bit of R-code of my own choosing and then saving the document
+
 ```{r}
 2+4
 ```
