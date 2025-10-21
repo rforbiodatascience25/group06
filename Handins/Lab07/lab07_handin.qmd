@@ -3,3 +3,41 @@ title: "lab07_handin"
 format: html
 ---
 
+## **Info**
+
+**Group number:** 06
+
+**Group members:**
+
+Alberte Englund, s215067
+
+Mathilde Due, s215063,
+
+Line Winther Gormsen, s215111
+
+Sigrid Frandsen, s205875
+
+Kristine Johansen, s215098
+
+# 1. Aim
+
+# 2. **Load packages**
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(broom)  # devtools::install_github("tidymodels/broom")
+library(cowplot)
+```
+
+# 3. **Load data**
+
+```{r}
+biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
+```
+
+# 4. **Data preparation**
+
+# 5. **Analysis**
