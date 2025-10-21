@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-# Lab 5: Data Wrangling II 
+# Lab 5: Data Wrangling II
 
 ## 1. Background
 
