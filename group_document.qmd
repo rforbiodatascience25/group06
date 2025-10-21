@@ -5,6 +5,20 @@ format: html
 
 # s215098 - Kris
 
+## New analysis
+
+some text
+
+```{r}
+2+2
+```
+
+more text
+
+test
+
+# s215063
+
 # s215063 - Mathilde
 
 ## New analysis
