@@ -9,7 +9,7 @@ format: html
 
 # s215063 - Mathilde
 
-Some R code \>\>\>\>\>\>\> 1385408e048e66ef476c3f4e6f5c2aeaea263563
+Some R code
 
 # s215067 - Alberte
 
