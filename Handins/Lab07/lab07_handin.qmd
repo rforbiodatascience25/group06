@@ -1,6 +1,9 @@
 ---
 title: "lab07_handin"
-format: html
+format:
+  html:
+    embed-resources: true
+editor: visual
 ---
 
 ## **Info**
