@@ -22,9 +22,23 @@ Sigrid Frandsen, s205875
 
 Kristine Johansen, s215098
 
-# 1. Aim
+# 1. Background
 
-# 2. **Load packages**
+This report analyse a breast cancer data set, "biopsy", from the University of Wisconsin Hospitals, Madison. It describes biopsies of breast tumors for 699 patients, each of which's outcome (benign/malignant) is noted. Each patient has 9 attributes with scores from 1 to 10.
+
+# 2. Aim
+
+In this report, we'll investigate the "biopsy" data set using Principal Component Analysis (PCA). We'll analyse the data in three parts of standard PCA:
+
+1.  Look at the data in PC coordinates.
+
+2.  Look at the rotation matrix.
+
+3.  Look at the variance explained by each PC.
+
+From this analysis we aim to find tendencies in the data attributes that correlates with the patients' diagnosis being "benign" or "malignant".
+
+# 3. **Load Libraries**
 
 To carry out the analysis, we used packages from the `tidyverse` collection along with `broom` for tidying model outputs and `cowplot` for plot themes.
 
@@ -36,92 +50,149 @@ library("broom")  # devtools::install_github("tidymodels/broom")
 library("cowplot")
 ```
 
-# 3. **Load data**
+# 4. **Load Data**
 
 We use the `biopsy` dataset, available online through the repository. The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.
 
 ```{r}
-biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
+data_path <- "data/biopsy.csv"
 
-biopsy
+if (!dir.exists("data")) dir.create("data")
+
+if (!file.exists(data_path)) {
+  message("Downloading biopsy dataset...")
+  download.file("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv", 
+                destfile = data_path, 
+                mode = "wb")
+} else {
+  message("Using local copy of biopsy dataset.")
+}
+
+biopsy <- read_csv(data_path)
 ```
 
-We then investigate the data.
+# 5. Data Description
+
+We then investigate the data frame.
 
 ```{r}
 str(biopsy)
 ```
 
-# 4. **Data preparation**
+# 5. **Data Analysis**
+
+## Data Preparation and Calculation of Principal Components
+
+To prepare the data for analysis, we retained only numeric columns, as prcomp() can only handle numeric columns. We then scaled the data to unit variance and calculated the first 9 Principal Components (PCs) using the prcomp() function.
 
 ```{r}
 pca_fit <- biopsy %>% 
-  select(where(is.numeric)) %>% # retain only numeric columns
-  prcomp(scale = TRUE) # do PCA on scaled data
+  select(where(is.numeric)) %>%
+  scale() %>%
+  prcomp()
 ```
 
-```{r}
-pca_fit <- biopsy %>% 
-  select(where(is.numeric)) %>% # retain only numeric columns
-  scale() %>% # scale data
-  prcomp() # do PCA
-```
+## Plotting the first two principal components
 
-# 5. **Analysis**
+To analyse the data, we want to plot the data with our first two principal components (the ones explaining the most variance in the data). The data should be colored based on the diagnosis given in the original biopsy data, so to add this data back in, we use the augment() function.
 
 ```{r}
 
 pca_fit %>%
-  augment(biopsy) %>% # add original dataset back in
-  ggplot(aes(.fittedPC1, .fittedPC2, color = outcome)) + 
+  augment(biopsy) %>%
+  ggplot(aes(.fittedPC1,
+             .fittedPC2,
+             color = outcome)) + 
   geom_point(size = 1.5) +
   scale_color_manual(
-    values = c(malignant = "#D55E00", benign = "#0072B2")
+    values = c(malignant = "#D55E00",benign = "#0072B2")
   ) +
-  theme_half_open(12) + background_grid()
+  labs(
+    x = "Principal Component 1 (PC1)",
+    y = "Principal Component 2 (PC2)",
+    color = "Diagnosis"
+  ) +
+  theme_half_open(12) +
+  background_grid()
+
 pca_fit
 ```
 
+From this plot, we can already see a clear division between the benign and malignant group along the first principal component. The malignant group have lower PC1 values and if we compare it with the first principal component:
+
 ```{r}
-# extract rotation matrix
+pca_fit$rotation
+```
+
+The PC1 has only negative values, meaning that the patients with malignant tumors will only have positive scores in all categories and since the uniform cell size fx has a higher absolute value, these patients will have higher tumor sizes. To get more extensive information though you would need to compare more in depth with the other PC scores.
+
+## Looking at the data in PC coordinates
+
+Now, to look at the data in the calculated PC coordinates, we start out by extracting the rotation matrix, stored in pca_fit\$rotation, using tidy.
+
+```{r}
 pca_fit %>%
   tidy(matrix = "rotation")
 ```
 
+The data appears to be in long format.
+
+The data is then plotted creating a vector for each attribute in the coordinates of the first two principal components.
+
 ```{r}
 
-# define arrow style for plotting
 arrow_style <- arrow(
-  angle = 20, ends = "first", type = "closed", length = grid::unit(8, "pt")
+  angle = 20,
+  ends = "first",
+  type = "closed",
+  length = grid::unit(8, "pt")
 )
 
-# plot rotation matrix
+
 pca_fit %>%
   tidy(matrix = "rotation") %>%
-  pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
+  pivot_wider(names_from = "PC",
+              names_prefix = "PC",
+              values_from = "value") %>%
   ggplot(aes(PC1, PC2)) +
-  geom_segment(xend = 0, yend = 0, arrow = arrow_style) +
+  geom_segment(xend = 0,
+               yend = 0,
+               arrow = arrow_style) +
   geom_text(
     aes(label = column),
-    hjust = 1, nudge_x = -0.02, 
+    hjust = 1,
+    nudge_x = -0.02, 
     color = "#904C2F"
   ) +
-  xlim(-1.25, .5) + ylim(-.5, 1) +
-  coord_fixed() + # fix aspect ratio to 1:1
+  xlim(-1.25, .5) +
+  ylim(-.5, 1) +
+  coord_fixed() +
   theme_minimal_grid(12)
+
 pca_fit
 ```
+
+This plot gives a good overview of how the principal components explain the variance in the data. All variables with positive scores have negative scores on PC1 and a pretty uniform. For PC2, the mitoses variable stands out with much higher values of the PC2 than the other ones.
+
+## Variance explained by the PCs
+
+Lastly, we'll look at the variance explained by each principal component. To do this, we can extract the data like before using tidy, now for the eigenvalues matrix:
 
 ```{r}
 pca_fit %>%
   tidy(matrix = "eigenvalues")
 ```
 
+We see that the first and second principal components explain 66% and 7% percent of the variance respectively.
+
+We can do a bar plot for the same data:
+
 ```{r}
 pca_fit %>%
   tidy(matrix = "eigenvalues") %>%
   ggplot(aes(PC, percent)) +
-  geom_col(fill = "#56B4E9", alpha = 0.8) +
+  geom_col(fill = "#56B4E9",
+           alpha = 0.8) +
   scale_x_continuous(breaks = 1:9) +
   scale_y_continuous(
     labels = scales::percent_format(),
