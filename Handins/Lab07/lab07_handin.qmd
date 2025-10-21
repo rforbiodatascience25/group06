@@ -41,6 +41,18 @@ We use the `biopsy` dataset, available online through the repository. The code b
 biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
 ```
 
+We then investigate the data.
+
+```{r}
+str(biopsy)
+```
+
 # 4. **Data preparation**
+
+```{r}
+pca_fit <- biopsy %>% 
+  select(where(is.numeric)) %>% # retain only numeric columns
+  prcomp(scale = TRUE) # do PCA on scaled data
+```
 
 # 5. **Analysis**
