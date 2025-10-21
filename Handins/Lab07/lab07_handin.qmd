@@ -43,7 +43,7 @@ library(cowplot)
 
 # 3. **Load data**
 
-We use the `biopsy` dataset, available online through the repository. The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.
+We use the `biopsy` dataset, available online through the ... repository. **The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.**
 
 ```{r}
 biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
