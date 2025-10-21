@@ -34,6 +34,8 @@ meta_data <- read_csv(file = "../../data/subject-metadata.csv",
 
 # 5. Data Description
 
+## The Meta Data
+
 Information about the data is easily retrived by using the pipe command (remember short cut: Shift + cmd + m). Here, we're showing the first 10 observations.
 
 ```{r}
@@ -183,18 +185,53 @@ meta_data_race |>
 Now, we'll filter away the columns starting with D...-A (not class I) with select() and then rename the variables with rename() (using a lookup vector)
 
 ```{r}
-loopup <- c(HLA-A...9 = "A1",
-            HLA-A...10 = "A2",
-            HLA-B...11 = "B1",
-            HLA-B...12 = "B2")
+lookup <- c(A1 = "HLA-A...9",
+            A2 = "HLA-A...10",
+            B1 = "HLA-B...11",
+            B2 = "HLA-B...12",
+            C1 = "HLA-C...13",
+            C2 = "HLA-C...14")
 
 meta_data_class1 <- meta_data_race |>
   select(!starts_with("D")) |> 
-  rename(
-    "HLA-A...9" =  
-  )
+  rename(all_of(lookup))
 
 meta_data_class1
+```
+
+## The Peptide Details Data
+
+```{r}
+peptide_data |> 
+  slice_sample(n = 10)
+```
+
+**Q3: How many observations of how many variables are in the data?**
+
+From the output above, we can state that there are 10 observations and 7 variables in the peptide dataset.
+
+To adress the rather large dataset peptide_data, we'll zip it and work with that from now on.
+
+```{r}
+write_csv(x = peptide_data,
+          file = "../../data/peptide-detail-ci.csv.gz")
+```
+
+OBS!!! Mangler at slette filen (det står der i opgaven man skal), men så kan i andre ikke loade den, så jeg har ikke gjort endnu
+
+To delete the file from command line:
+
+```{r}
+file.remove("../../data/peptide-detail-ci.csv")
+```
+
+### Load the data from a zip file
+
+To load data from zipped file instead of from csv as done earlier:
+
+```{r}
+peptide_data_gz <- read_csv(file = gzfile("../../data/peptide-detail-ci.csv.gz"),
+                         na = c("", "n/a", "N/A", "NA"))
 ```
 
 # 6. Analysis

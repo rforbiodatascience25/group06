@@ -1,0 +1,165 @@
+---
+title: "Lab 06 - exercises"
+format: html
+---
+
+**Research question:**
+
+What genes are significantly up- or down-regulated between the patients with/without early metastasis?
+
+## Load packages
+
+```{r}
+library("tidyverse")
+library("purrr")
+```
+
+## Load data
+
+```{r}
+raw_dir <- "../../../r_for_bio_data_science/data/_raw/"
+data_file <- "gravier.RData"
+data_loc <- "https://github.com/ramhiser/datamicroarray/raw/master/data/"
+
+if( !dir.exists(raw_dir) ){
+  dir.create(path = raw_dir)
+}
+if( !file.exists(str_c(raw_dir, data_file)) ){
+  download.file(
+    url = str_c(data_loc, data_file),
+    destfile = str_c(raw_dir, data_file))
+}
+load(file = str_c(raw_dir, data_file))
+```
+
+**Q1: In your group, discuss, what is going on here? Make sure you follow the difference between the first time you run this and the second!**
+
+-   First time we run the code, a new directory and file will be added. The second time the files will always be existing and the data will only be loaded.
+
+```{r}
+ls()
+```
+
+```{r}
+str(gravier)
+```
+
+## Clean data
+
+**Q2: Discuss in your group if this is tidy data?**
+
+-   The data is not tidy as it has two columns, where one of them have a lot of variables in it
+
+**T2: Create a new “Clean Data” header in your document and add the below chunk:**
+
+```{r}
+gravier_clean <- gravier |>
+  bind_cols() |>
+  as_tibble()
+```
+
+**Q3: Discuss in your group if this is tidy data?**
+
+-   Yes, now every column only contains one observation per row
+
+**Q4: In fact, specifically state what are the “rules” for tidy data?**
+
+-   Each variable needs to be saved in its own column
+
+-   Each observation needs to be saved in its own row
+
+-   Each type of observations is stored in a single table
+
+**Q5: In your group, discuss why `bind_cols` can by *very very* dangerous to use?**
+
+-   By using bind cols, the data is just added up together and it does not check if the columns match up correctly.
+
+**T3: In your “Clean Data”-section, add a new chunk, where you write a tab-separated-values gzipped (i.e. compressed) file called “02_gravier_clean” (with the correct file type specification) into your “data”-folder**
+
+```{r}
+out_dir  <- "../../../r_for_bio_data_science/data"
+out_file <- "02_gravier_clean.tsv.gz"
+
+
+write_tsv(gravier_clean, file = file.path(out_dir, out_file))
+```
+
+## Augment data
+
+**T4: Create a new “Augment Data” header in your document and add the below chunk:**
+
+```{r}
+gravier_clean_aug <- gravier_clean |>
+  mutate(y = case_when(y == "poor" ~ 1,
+                       y == "good" ~ 0)) |> 
+  relocate(early_metastasis = y)
+```
+
+**Q6: In your group, discuss, what each step of the above work flow does, i.e. what are the specifics of the `dplyr` pipeline?**
+
+-   Mutate modifies the `y` column from good/poor values to either 0 or 1.
+
+-   Relocate moves the data to the first column and renames th column to `early_metastasis`.
+
+**T5: In your “Augment Data”-section, add a new chunk, where you write a tab-separated-values gzipped (i.e. compressed) file called “03_gravier_clean_aug” (with the correct file type specification) into your “data” folder**
+
+```{r}
+out_dir  <- "../../../r_for_bio_data_science/data"
+out_file <- "03_gravier_clean_aug.tsv.gz"
+
+
+write_tsv(gravier_clean_aug, file = file.path(out_dir, out_file))
+```
+
+## Analysis
+
+**T7: Use the `lm()` function to create your first model and save it to a new variable e.g. “my_first_model”**
+
+```{r}
+my_first_model <- gravier_clean_aug |>
+  lm(g2E09 ~ early_metastasis, data = _)
+```
+
+**Q7: What are your coefficients?**
+
+Using the summary command to find the coefficients
+
+```{r}
+summary(my_first_model)
+```
+
+**T8: Use the `group_by()summarise()` workflow to calculate the mean values of the gene expression for your favourite gene stratified on `early_metastasis`**
+
+```{r}
+gene_means <- gravier_clean_aug |>
+  group_by(early_metastasis) |>
+  summarise(mean_expression = mean(g2E09, na.rm = TRUE))
+gene_means
+```
+
+**Q9: Discuss in your group: How are your coefficients related to your mean expression values?**
+
+-   The intercept and the mean expression at an early metastasis value of 0 is the same. In the regression we made before the x was the early metastasis and it makes sense that the value of y is then the same as mean expression for early metastasis at 0.
+
+**Q10: Discuss in your group: Is your gene up- or down-regulated from `early_metastasis = 0` to `early_metastasis = 1` and use the `summary()` function to see if is it statistically significant at a level of significance of ?**
+
+-   Since the mean expression is decreasing, and the gene must be down-regulated.
+
+```{r}
+gene_summary<- 
+  my_first_model |> 
+  summary()
+gene_summary
+```
+
+-   The p-value is 0.08988 , which means that it is not significant as it is over 0.0500.
+
+**Q11: How many genes are there in the gravier data set?**
+
+To find the number of genes, we can print the number of columns using ncol:
+
+```{r}
+ncol(gravier_clean_aug)
+```
+
+-   The number of genes in the agmented file are 2906

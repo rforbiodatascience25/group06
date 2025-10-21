@@ -3,11 +3,51 @@ title: "R note collection - 2025"
 format: html
 ---
 
+# Loading packages
+
+## Tidyverse
+
+*Description of tidyverse...*
+
+```{r}
+library("tidyverse")
+```
+
+Packages that are a part of tidyverse:
+
+-   `ggplot2`
+-   `dplyr`
+-   `tidyr`
+-   `readr`
+-   `purrr`
+-   `tibble`
+-   `stringr`
+-   `forcats`
+-   `lubridate`
+
 # Loading data
+
+```{r}
+library("ggplot2")
+library("dplyr")
+library("tidyr")
+library("readr")
+library("purrr")
+library("tibble")
+library("stringr")
+library("forcats")
+library("lubridate")
+```
 
 # Data wrangling
 
 ## Join
+
+### Full join
+
+### Inner join
+
+### Right/left join
 
 ### Anti join
 
@@ -33,6 +73,15 @@ meta_data |>
 # Functional programming
 
 ## Call functions on objects
+# Data visualisation
+
+# Functional programming
+
+To make functional programming you are using the purrr package (which is a part of tidyverse). The advantage of functional programming is that you can define a function one time and if you have to make changes it only needs to be changed once.
+
+## Double a value
+
+Creating the function:
 
 ```{r}
 double_the_value <- function(value){
@@ -44,6 +93,7 @@ double_the_value(value = x)
 ```
 
 The result can be "catched" by assigning it to a variable
+Using the function: The result can be "catched" by asssigning it to a vairalbe
 
 ```{r}
 y <- double_the_value(value = x)
@@ -51,6 +101,9 @@ y
 ```
 
 # Different commands
+
+
+# Different general commands
 
 ### Separator
 

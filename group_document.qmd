@@ -1,0 +1,15 @@
+---
+title: "group_document"
+format: html
+---
+
+# s215098 - Kris
+
+# s215063 - Mathilde
+Some R code
+
+# s215067 - Alberte 
+
+# s215111 . Line
+
+# s205875 - Sigrid 
