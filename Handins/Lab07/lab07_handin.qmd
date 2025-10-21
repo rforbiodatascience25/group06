@@ -31,7 +31,6 @@ library("tidyverse")
 ```
 
 To carry out the analysis, we used packages from the `tidyverse` collection along with `broom` for tidying model outputs and `cowplot` for plot themes.
->>>>>>> 83cc951476878a7f1e2c9a3d27674b85a38b5be5
 
 ```{r}
 #| message: false
