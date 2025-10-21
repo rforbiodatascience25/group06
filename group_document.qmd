@@ -13,10 +13,14 @@ Some R code
 
 # s215067 - Alberte
 
-# s215111 - Line
+Some R code
+
+Generate 8 random integers between 2 and 10 without replacement
 
 ```{r}
-2+4
+sample(2:10,8, replace=FALSE) 
 ```
+
+# s215111 . Line
 
 # s205875 - Sigrid
