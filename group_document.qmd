@@ -17,8 +17,6 @@ more text
 
 test
 
-# s215063
-
 # s215063 - Mathilde
 
 ## New analysis
