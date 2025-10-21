@@ -16,7 +16,7 @@ Some R code
 # s215111 - Line
 
 ```{r}
-2+2
+2+4
 ```
 
 # s205875 - Sigrid
