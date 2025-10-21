@@ -1,5 +1,0 @@
----
-title: "lab07_group06"
-format: html
----
-
