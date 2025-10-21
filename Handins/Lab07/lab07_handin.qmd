@@ -1,9 +1,6 @@
 ---
 title: "lab07_handin"
-format:
-  html:
-    embed-resources: true
-editor: visual
+format: html
 ---
 
 ## **Info**
@@ -26,12 +23,7 @@ Kristine Johansen, s215098
 
 # 2. **Load packages**
 
-```{r}
-library("tidyverse")
-```
-
 To carry out the analysis, we used packages from the `tidyverse` collection along with `broom` for tidying model outputs and `cowplot` for plot themes.
->>>>>>> 83cc951476878a7f1e2c9a3d27674b85a38b5be5
 
 ```{r}
 #| message: false
@@ -43,7 +35,7 @@ library(cowplot)
 
 # 3. **Load data**
 
-We use the `biopsy` dataset, available online through the ... repository. **The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.**
+We use the `biopsy` dataset, available online through the repository. The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.
 
 ```{r}
 biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
