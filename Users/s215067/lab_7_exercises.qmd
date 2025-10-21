@@ -32,3 +32,7 @@ format: html
 #### **Q4:** Discuss in your group what each of the steps did and why they are performed?
 
 -   
+
+#### **Q5:** Find the `ggplot` GitHub repo again. How many branches there are?
+
+-   13 branches
