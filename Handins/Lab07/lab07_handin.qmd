@@ -27,7 +27,7 @@ Kristine Johansen, s215098
 # 2. **Load packages**
 
 ```{r}
-library(tidyverse)
+library("tidyverse")
 ```
 
 ```{r}
