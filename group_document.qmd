@@ -35,7 +35,7 @@ sample(2:10,8, replace=FALSE)
 
 # s215111 - Line
 
-### New analysis 
+### New analysis
 
 some text to go with the code
 
