@@ -26,6 +26,8 @@ Kristine Johansen, s215098
 To carry out the analysis, we used packages from the `tidyverse` collection along with `broom` for tidying model outputs and `cowplot` for plot themes.
 
 ```{r}
+#| message: false
+#| warning: false
 library(tidyverse)
 library(broom)  # devtools::install_github("tidymodels/broom")
 library(cowplot)
