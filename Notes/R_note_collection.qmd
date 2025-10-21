@@ -39,7 +39,6 @@ library("forcats")
 library("lubridate")
 ```
 
-
 # Data wrangling
 
 ## Join
