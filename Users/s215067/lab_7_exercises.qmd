@@ -1,0 +1,30 @@
+---
+title: "lab_7_exercises"
+format: html
+---
+
+# Exercises
+
+## Prologue
+
+### T1: Find the `GitHub` repository for the `ggplot2` R-package
+
+-   <https://github.com/tidyverse/ggplot2>
+
+#### **Q1:** How many Contributors are there?
+
+-   339 contributors
+
+### **T1:** Find the `GitHub` repository for the `Linux kernel`
+
+-   <https://github.com/torvalds/linux>
+
+#### **Q2:** How many Contributors are there?
+
+-   5000+ contributors
+
+#### Q**3:** Discuss in your group why having an organised approach to version control is central? And consider the simple contrast of the challenges you were facing when doing the course assignments.
+
+-   When there are many contributors to a repo, version control is essential, as this enables you to track changes and revert to older versions. When many changes are being made by many people, there is a chance, that the changes that are being made will crash the program. Version control lets you find older versions and track the error.
+
+## Your first collaboration
