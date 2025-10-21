@@ -21,9 +21,19 @@ test
 
 # s215063 - Mathilde
 
-Some R code \>\>\>\>\>\>\> 1385408e048e66ef476c3f4e6f5c2aeaea263563
+## New analysis
+
+Some R code
 
 # s215067 - Alberte
+
+Some R code
+
+Generate 8 random integers between 2 and 10 without replacement
+
+```{r}
+sample(2:10,8, replace=FALSE) 
+```
 
 # s215111 . Line
 
