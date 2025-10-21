@@ -28,3 +28,11 @@ format: html
 -   When there are many contributors to a repo, version control is essential, as this enables you to track changes and revert to older versions. When many changes are being made by many people, there is a chance, that the changes that are being made will crash the program. Version control lets you find older versions and track the error.
 
 ## Your first collaboration
+
+#### **Q4:** Discuss in your group what each of the steps did and why they are performed?
+
+-   
+
+#### **Q5:** Find the `ggplot` GitHub repo again. How many branches there are?
+
+-   13 branches
