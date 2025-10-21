@@ -17,8 +17,6 @@ more text
 
 test
 
-# s215063
-
 # s215063 - Mathilde
 
 ## New analysis
@@ -35,6 +33,14 @@ Generate 8 random integers between 2 and 10 without replacement
 sample(2:10,8, replace=FALSE) 
 ```
 
-# s215111 . Line
+# s215111 - Line
+
+### New analysis 
+
+some text to go with the code
+
+```{r}
+2+10
+```
 
 # s205875 - Sigrid
