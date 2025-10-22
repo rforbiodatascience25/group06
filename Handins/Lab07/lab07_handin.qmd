@@ -1,10 +1,12 @@
 ---
-title: "lab07_handin"
+title: "Lab 7 Assignment: Group 06"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+
+# Lab 7 Assignment: Group 06
 
 ## **Info**
 
@@ -22,11 +24,11 @@ Sigrid Frandsen, s205875
 
 Kristine Johansen, s215098
 
-# 1. Background
+## 1. Background
 
 This report analyse a breast cancer data set, "biopsy", from the University of Wisconsin Hospitals, Madison. It describes biopsies of breast tumors for 699 patients, each of which's outcome (benign/malignant) is noted. Each patient has 9 attributes with scores from 1 to 10.
 
-# 2. Aim
+## 2. Aim
 
 In this report, we'll investigate the "biopsy" data set using Principal Component Analysis (PCA). We'll analyse the data in three parts of standard PCA:
 
@@ -38,7 +40,7 @@ In this report, we'll investigate the "biopsy" data set using Principal Componen
 
 From this analysis we aim to find tendencies in the data attributes that correlates with the patients' diagnosis being "benign" or "malignant".
 
-# 3. **Load Libraries**
+## 3. **Load Libraries**
 
 To carry out the analysis, we used packages from the `tidyverse` collection along with `broom` for tidying model outputs and `cowplot` for plot themes.
 
@@ -50,7 +52,7 @@ library("broom")  # devtools::install_github("tidymodels/broom")
 library("cowplot")
 ```
 
-# 4. **Load Data**
+## 4. **Load Data**
 
 We use the `biopsy` dataset, available online through the repository. The code below downloads the data and store it locally the first time, the script is run. In subsequent runs the data is only reloaded.
 
@@ -71,7 +73,7 @@ if (!file.exists(data_path)) {
 biopsy <- read_csv(data_path)
 ```
 
-# 5. Data Description
+## 5. Data Description
 
 We then investigate the data frame.
 
@@ -79,9 +81,9 @@ We then investigate the data frame.
 str(biopsy)
 ```
 
-# 5. **Data Analysis**
+## 5. **Data Analysis**
 
-## Data Preparation and Calculation of Principal Components
+### Data Preparation and Calculation of Principal Components
 
 To prepare the data for analysis, we retained only numeric columns, as prcomp() can only handle numeric columns. We then scaled the data to unit variance and calculated the first 9 Principal Components (PCs) using the prcomp() function.
 
@@ -92,7 +94,7 @@ pca_fit <- biopsy %>%
   prcomp()
 ```
 
-## Plotting the first two principal components
+### Plotting the first two principal components
 
 To analyse the data, we want to plot the data with our first two principal components (the ones explaining the most variance in the data). The data should be colored based on the diagnosis given in the original biopsy data, so to add this data back in, we use the augment() function.
 
@@ -126,7 +128,7 @@ pca_fit$rotation
 
 The PC1 has only negative values, meaning that the patients with malignant tumors will only have positive scores in all categories and since the uniform cell size fx has a higher absolute value, these patients will have higher tumor sizes. To get more extensive information though you would need to compare more in depth with the other PC scores.
 
-## Looking at the data in PC coordinates
+### Looking at the data in PC coordinates
 
 Now, to look at the data in the calculated PC coordinates, we start out by extracting the rotation matrix, stored in pca_fit\$rotation, using tidy.
 
@@ -174,7 +176,7 @@ pca_fit
 
 This plot gives a good overview of how the principal components explain the variance in the data. All variables with positive scores have negative scores on PC1 and a pretty uniform. For PC2, the mitoses variable stands out with much higher values of the PC2 than the other ones.
 
-## Variance explained by the PCs
+### Variance explained by the PCs
 
 Lastly, we'll look at the variance explained by each principal component. To do this, we can extract the data like before using tidy, now for the eigenvalues matrix:
 
