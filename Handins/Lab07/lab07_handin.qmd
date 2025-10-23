@@ -26,7 +26,7 @@ Kristine Johansen, s215098
 
 ## 1. Background
 
-This report analyse a breast cancer data set, "biopsy", from the University of Wisconsin Hospitals, Madison. It describes biopsies of breast tumors for 699 patients, each of which's outcome (benign/malignant) is noted. Each patient has 9 attributes with scores from 1 to 10.
+This report analyses a breast cancer data set, "biopsy", from the University of Wisconsin Hospitals, Madison. It describes biopsies of breast tumors for 699 patients, each of which's outcome (benign/malignant) is noted. Each patient has 9 attributes with scores from 1 to 10.
 
 ## 2. Aim
 
