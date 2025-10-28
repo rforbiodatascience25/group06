@@ -1,0 +1,570 @@
+---
+title: "lab02_exercises"
+format: html
+editor: visual
+---
+
+# 1. Load the data
+
+```{r}
+library(tidyverse)
+
+library("curl")
+base_url <- "https://github.com/"
+target_file <- "ramhiser/datamicroarray/raw/master/data/gravier.RData"
+output_file <- "data/gravier.RData"
+curl_download(url = str_c(base_url,
+                          target_file),
+              destfile = output_file)
+```
+
+```{r}
+#Load the file: 
+
+load(file = "data/gravier.RData")
+```
+
+## 1.1 Looking at the data
+
+```{r}
+
+#Check data frame
+class(gravier)
+
+#qucik overview: 
+summary(gravier)
+
+# open it in a spreadsheet-style window (RStudio only)
+View(gravier)
+
+# just type the object name
+gravier   
+
+
+```
+
+# 2. Create data
+
+## 2.1 load our data science toolbox, including `ggplot`.
+
+## 2.2 Create data
+
+create a new chunk, copy/paste the below code and run it:
+
+```{r}
+set.seed(676571)
+cancer_data=mutate(as_tibble(pluck(gravier,"x")),y=pluck(gravier,"y"),pt_id=1:length(pluck(gravier, "y")),age=round(rnorm(length(pluck(gravier,"y")),mean=55,sd=10),1))
+cancer_data=rename(cancer_data,event_label=y)
+cancer_data$age_group=cut(cancer_data$age,breaks=seq(10,100,by=10))
+cancer_data=relocate(cancer_data,c(pt_id,age,age_group,pt_id,event_label))
+```
+
+Now we have the data set as a tibble, which is an augmented data frame
+
+```{r}
+cancer_data
+```
+
+### **Q1: What is this data?**
+
+Breast cancer gene expression dataset (from Gravier et al., 2010). It contains gene expression profiles for cancer patients, along with outcome labels.
+
+Gravier et al. (2010) have considered small, invasive ductal carcinomas without axillary lymph node involvement (T1T2N0) to predict metastasis of small node-negative breast carcinoma. Using comparative genomic hybridization arrays, they examined 168 patients over a five-year period. The 111 patients with no event after diagnosis were labelled good, and the 57 patients with early metastasis were labelled poor.
+
+-   `gravier$x` → a matrix of gene expression values (patients × genes).
+
+-   `gravier$y` → the clinical outcome label (good / poor prognosis).
+
+This is a **gene expression dataset for 168 cancer patients** (rows), where each patient has:
+
+-   outcome label (good/poor prognosis)
+
+-   synthetic age data,
+
+-   and expression levels for \~2,900 genes (columns).
+
+### 
+
+**Q2:** **How many rows and columns are there in the data set in total?**
+
+```{r}
+
+#Will return rows and columns 
+dim(cancer_data)
+```
+
+```{r}
+
+#if they are wanted seperately
+# number of rows
+nrow(cancer_data)  
+# number of columns
+ncol(cancer_data)  
+```
+
+There are 168 rows and 2909 columns in the data
+
+### **Q3:** **Which are the variables and which are the observations in relation to rows and columns?**
+
+Observations: There is gene expression data for 168 patients (rows)
+
+Variables: Each of the 2,909 columns is a variable describing something about those patients (columns)
+
+# 3. ggplot - The Very Basics
+
+## 3.1 General Syntax
+
+```{r}
+ggplot(data = my_data,
+       mapping = aes(x = variable_1_name,
+                     y = variable_2_name)) +
+  geom_something() +
+  labs()
+```
+
+Note the `+` for adding layers to the plot
+
+-   `ggplot` the plotting function
+
+-   `my_data` the data you want to plot
+
+-   `aes()` the mappings of your data to the plot
+
+-   `x` data for the x-axis
+
+-   `y` data for the y-axis
+
+-   `geom_something()` the representation of your data
+
+-   `labs()` the x-/y-labels, title, etc.
+
+## 3.2 Basic Plots
+
+Primer: Plotting 2 x 20 random normally distributed numbers, can be done like so:
+
+```{r}
+ggplot(data = tibble(x = rnorm(20),
+                     y = rnorm(20)),
+       mapping = aes(x = x,
+                     y = y)) +
+  geom_point()
+```
+
+Using this small primer, the materials you read for today and the `cancer_data` you created, in separate code-chunks, create a:
+
+-   **T1: scatter plot of one variable against another**
+
+-   **T2: line graph of one variable against another**
+
+-   **T3: box plot of one variable** (*Hint: Set `x = "my_gene"` in `aes()`*)
+
+-   **T4: histogram of one variable**
+
+-   **T5: densitogram of one variable**
+
+### T1: **scatter plot of one variable against another**
+
+```{r}
+ggplot(cancer_data, aes(x = g2E09, y = g7F07)) +
+  geom_point() +
+  labs(x = "Gene g2E09 expression", y = "Gene g7F07 expression",
+       title = "Scatter plot of one variable against another")
+```
+
+### **T2: line graph of one variable against another**
+
+```{r}
+ggplot(cancer_data, aes(x = pt_id, y = g2E09)) + geom_line() + labs(x = "Patient ID", y = "Gene g2E09 expression", title = "Line graph of one variable against another")
+```
+
+### **T3: box plot of one variable** (*Hint: Set `x = "my_gene"` in `aes()`*
+
+```{r}
+
+my_gene <- "g2E09"
+
+
+ggplot(cancer_data, aes(x = "gene_g2E09", y =  .data[[my_gene]])) +
+  geom_boxplot() +
+  labs(x = "", y = "Expression of g2E09",
+       title = "Boxplot of gene g2E09 expression")
+
+```
+
+### **T4:Histogram of one variable** - distribution of ages
+
+```{r}
+ggplot(cancer_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(x = "Age", y = "Number of patients",
+       title = "Histogram showing distribution of patient ages")
+
+```
+
+### **T5: densitogram of one variable**
+
+```{r}
+ggplot(cancer_data, aes(x = g2E09)) +
+  geom_density(fill = "lightgreen", alpha = 0.6) +
+  labs(x = "Gene g2E09 expression", y = "Density",
+       title = "Density plot of gene expression")
+
+```
+
+Remember to write notes to yourself, so you know what you did and if there is something in particular you want to remember.
+
+### **Q4: Do all geoms require both `x` and `y?`**
+
+Not all geoms in **ggplot2** require both an `x` and a `y`.
+
+Geoms that need both x and y:
+
+-   geom_point() → scatter plots
+
+-   geom_line() → line plots
+
+-   geom_boxplot() → box plots (needs at least one continuous variable on y and a grouping on x)
+
+-   geom_bar(stat = "identity") → when you’re supplying actual values for bar heights
+
+Geoms that only need **x:**
+
+-   geom_histogram() → you only give x, ggplot counts frequencies for y
+
+-   geom_density() → you only give x, ggplot computes the density estimate for y
+
+-   geom_bar() (default stat = "count") → only x, ggplot counts observations
+
+If the geom is about the relationship between two variables (scatter, line, boxplot), you need both x and y.
+
+If the geom is about the distribution of a single variable (histogram, density), you need only one (x).
+
+## 3.3 Extending Basic Plots
+
+### **T6: Pick your favourite gene and create a box plot of expression levels stratified on the variable `event_label`**
+
+-   `x = event_label` (the stratification variable),
+
+-   `y = expression values` of your chosen gene.
+
+```{r}
+# T6 boxplot (pick any gene, here g2E09)
+cancer_data |>
+  ggplot(aes(x = event_label, y = g2E09)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +   # zooms without dropping data
+  theme_bw() +
+  labs(x = "Prognosis outcome", y = "Expression of g2E09")
+```
+
+### **T7: Like T6, but with densitograms** GROUP ASSIGNMENT (Important, see: [how to](https://r4bds.github.io/assignments.html))
+
+Found in assignment 02
+
+### **T8: Pick your favourite gene and create a box plot of expression levels stratified on the variable `age_group`**
+
+```{r}
+# T8 boxplot stratified by age_group
+my_gene <- "g2E09"   # <- pick your gene column name
+
+cancer_data |>
+  ggplot(aes(x = age_group, y = .data[[my_gene]])) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +    # zooms without dropping data
+  theme_bw() +
+  labs(x = "Age group", y = paste("Expression of", my_gene))
+```
+
+Then, add stratification on `event_label`
+
+```{r}
+my_gene <- "g2E09"   # <- pick your gene column name
+
+cancer_data |>
+  ggplot(aes(x = age_group,
+             y = .data[[my_gene]],
+             fill = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +   # zooms without dropping data
+  theme_bw() +
+  labs(x = "Age group",
+       y = paste("Expression of", my_gene),
+       fill = "Prognosis outcome")
+```
+
+Then, add transparency to the boxes
+
+```{r}
+my_gene <- "g2E09"   # <- pick your gene column name
+
+cancer_data |>
+  ggplot(aes(x = age_group,
+             y = .data[[my_gene]],
+             fill = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_boxplot(position = position_dodge(width = 0.8),
+               alpha = 0.6) +               # <- transparency
+  coord_cartesian(ylim = c(-0.5, 0.5)) +   # zooms without dropping data
+  theme_bw() +
+  labs(x = "Age group",
+       y = paste("Expression of", my_gene),
+       fill = "Prognosis outcome")
+```
+
+Then, add some labels
+
+```{r}
+my_gene <- "g2E09"   # <- pick your gene column name
+
+cancer_data |>
+  ggplot(aes(x = age_group,
+             y = .data[[my_gene]],
+             fill = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_boxplot(position = position_dodge(width = 0.8),
+               alpha = 0.6) +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +
+  theme_bw() +
+  labs(
+    title = paste("Expression of", my_gene, "by Age Group"),
+    subtitle = "Stratified by prognosis outcome",
+    x = "Age group",
+    y = paste("Expression of", my_gene),
+    fill = "Prognosis outcome"
+  )
+```
+
+### **T9: Pick your favourite gene and create a scatter plot of expression levels versus `age`**
+
+```{r}
+
+
+my_gene <- "g2E09"
+
+cancer_data |>
+  ggplot(aes(x = age, y = .data[[my_gene]], color = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(method = "lm", se = FALSE, size = 1, fullrange = TRUE) +
+  theme_bw() +
+  labs(
+    title = paste("Scatter of", my_gene, "vs Age"),
+    subtitle = "Linear trend by prognosis (no ribbon)",
+    x = "Age", y = paste("Expression of", my_gene),
+    color = "Prognosis outcome"
+  )
+```
+
+### **T10: Pick your favorite two genes and create a scatter plot of their expression levels**
+
+```{r}
+gene_x <- "g2E09"  
+gene_y <- "g7F07"  
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]], y = .data[[gene_y]])) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y),
+  )
+
+```
+
+-   Then, add stratification on `event_label`
+
+```{r}
+gene_x <- "g2E09"   
+gene_y <- "g7F07" 
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]],
+             y = .data[[gene_y]],
+             color = event_label)) +
+  geom_point(alpha = 0.7, size = 2) +
+  theme_bw() +
+  labs(
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y),
+    color = "Prognosis outcome"
+  )
+```
+
+-   Then, add a smoothing line
+
+```{r}
+
+gene_x <- "g2E09"   
+gene_y <- "g7F07" 
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]],
+             y = .data[[gene_y]],
+             color = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +   # <- smoothing line
+  theme_bw() +
+  labs(
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y),
+  )
+```
+
+-   Then, show split into separate panes based on the variable `age_group`
+
+```{r}
+gene_x <- "g2E09"   
+gene_y <- "g7F07" 
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]],
+             y = .data[[gene_y]],
+             color = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  facet_wrap(~ age_group) +   # <- split into separate panes by age group
+  theme_bw() +
+  labs(
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y)
+    )
+```
+
+-   Then, add some labels
+
+```{r}
+
+gene_x <- "g2E09"   
+gene_y <- "g7F07" 
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]],
+             y = .data[[gene_y]],
+             color = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  facet_wrap(~ age_group) +   # split into panes by age group
+  theme_bw() +
+  labs(
+    title = paste("Relationship between", gene_x, "and", gene_y),
+    subtitle = "Stratified by prognosis outcome (color) and faceted by age group",
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y),
+  )
+
+
+```
+
+-   Change the `event_label` title of the legend
+
+```{r}
+
+
+
+gene_x <- "g2E09"   
+gene_y <- "g7F07" 
+
+# renamed event_label to Early Metastasis
+
+cancer_data |>
+  ggplot(aes(x = .data[[gene_x]],
+             y = .data[[gene_y]],
+             color = event_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  facet_wrap(~ age_group) +
+  theme_bw() +
+  labs(
+    title = paste("Relationship between", gene_x, "and", gene_y),
+    subtitle = "Stratified by prognosis outcome (color) and faceted by age group",
+    x = paste("Expression of", gene_x),
+    y = paste("Expression of", gene_y),
+    color = "Early Metastasis"   # <- changed legend title
+  )
+```
+
+### **T11: Recreate the following plot**
+
+```{r}
+
+my_gene <- "g1CNS507"   # gene shown in the figure
+
+cancer_data |>
+  ggplot(aes(x = .data[[my_gene]],
+             y = event_label,
+             fill = event_label)) +
+  geom_boxplot(height = 0.6,            # <- increase height (default = 0.5)
+               alpha = 0.6,
+               outlier.colour = "grey40",
+               outlier.alpha = 0.8) +
+  scale_fill_manual(values = c(good = "#F4A3A8", poor = "#58C1BD")) +
+  guides(fill = "none") +
+  labs(
+    title = "A prognostic DNA signature for T1T2 node-negative breast cancer patients",
+    subtitle = "Labelling: good = no event, poor = early metastasis",
+    x = "Expression level of g1CNS507 (log2 transformed)",
+    y = "Event After Diagnosis",
+    caption = "Data from Gravier et al. (2010)"
+  ) 
+```
+
+### **Q5: Using your biological knowledge, what is your interpretation of the plot?**
+
+The plot compares expression of *g1CNS507* (log2 transformed) between breast cancer patients with good outcome (no early metastasis) and those with poor outcome (early metastasis).
+
+**Median expression**: Patients with poor outcome appear to have lower expression of *g1CNS507* compared to patients with good outcome.
+
+**Distribution**: The interquartile ranges (IQRs) show that the poor-outcome group tends to cluster around negative expression values, while the good-outcome group is centered closer to zero.
+
+**Biological interpretation**: This suggests that *g1CNS507* expression could act as a prognostic biomarker - higher expression may be protective (associated with no early metastasis), while lower expression may correlate with increased risk of early metastasis.
+
+### **T12: Recreate the following plot**
+
+```{r}
+my_gene <- "g1int239"
+
+cancer_data |>
+  ggplot(aes(x = age,
+             y = .data[[my_gene]],
+             fill = event_label)) +
+  geom_point(shape = 21, color = "black", alpha = 0.8, size = 2) +
+  geom_smooth(aes(color = event_label), method = "lm", se = FALSE, size = 1) +
+  scale_fill_manual(values = c(good = "#E07B7B", poor = "#00A6A6")) +
+  scale_color_manual(values = c(good = "#E07B7B", poor = "#00A6A6")) +
+  labs(
+    title = "A prognostic DNA signature for T1T2 node-negative breast cancer patients",
+    subtitle = "Stratified on labelling: good = no event, poor = early metastasis",
+    x = "Subject Age",
+    y = "Expression level of g1int239 (log2 transformed)",
+    fill = "Label",
+    color = "Label",
+    caption = "Data from Gravier et al. (2010)"
+  ) +
+  theme_gray(base_size = 12) +   # <- grey background
+  theme(
+    legend.position = "bottom",
+    legend.background = element_blank(),
+    legend.key = element_blank()
+  )
+```
+
+### **Q6: Using your biological knowledge, what is your interpretation of the plot?**
+
+The plot shows expression of *g1int239* (log2 transformed) as a function of patient age, with separate regression lines for patients with good prognosis (no early metastasis) and poor prognosis (early metastasis).
+
+**Trend across age:** Both groups show a slight increase in expression with age, although the slope is modest.
+
+**Group comparison:** The difference between the “good” and “poor” groups is relatively small, but overall, patients with a good prognosis appear to have a slightly higher expression of g1int239 across ages compared to poor prognosis patients.
+
+**Biological interpretation:** This suggests that g1int239 expression may have a weak association with prognosis in breast cancer. Higher expression could be modestly protective (linked to better outcomes), while lower expression may be linked to early metastasis. However, the overlap between groups indicates that g1int239 on its own is not a strong discriminator, but it may contribute to a multi-gene prognostic signature.

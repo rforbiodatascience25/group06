@@ -1,0 +1,375 @@
+---
+title: "lab03_exercises"
+format: html
+editor: visual
+---
+
+# Load packages/libraries
+
+```{r}
+#This package will work if you have your exercise files in another directorary / folder
+library("tidyverse")
+library("here")
+library(dplyr) 
+load(file = here("data/gravier.RData")) # Yup!
+
+library(ggplot2)
+```
+
+# Getting the data
+
+```{r}
+
+#First time you run the chunk (to fetch and save the data):
+#| echo: true
+#| eval: false #runing the code as "true" the first time, this is changed to "false" after, so the code is still shown but not runned. 
+
+base_url <- "http://userweb.eng.gla.ac.uk/umer.ijaz/bioinformatics/ecological/"
+raw_data_path <- "data/_raw/"
+
+#making directory for the _raw data
+dir.create("data/_raw", recursive = TRUE, showWarnings = FALSE)
+
+#download + save inside data/_raw
+SPE <- read_csv(file = str_c(base_url, "SPE_pitlatrine.csv"))
+write_csv(x = SPE,
+          file = str_c(raw_data_path, "SPE_pitlatrine.csv"))
+
+#download + save inside data/_raw
+ENV <- read_csv(file = str_c(base_url, "ENV_pitlatrine.csv"))
+write_csv(x = ENV,
+          file = str_c(raw_data_path, "ENV_pitlatrine.csv"))
+
+```
+
+# Wrangling the data
+
+```{r}
+
+#First time you run the chunk (to fetch and save the data):
+#| echo: true
+#| eval: false  #runing the code as "true" the first time, this is changed to "false" after, so the code is still shown but not runned. 
+
+
+SPE |> 
+  pivot_longer(cols = -Taxa,
+               names_to = "Samples",
+               values_to = "OTU_Count")  |> 
+  full_join(ENV, by = "Samples") |> 
+  mutate(site = case_when(str_detect(Samples, "^T") ~ "Tanzania",
+                          str_detect(Samples, "^V") ~ "Vietnam")) |>  
+  write_tsv(file = "data/SPE_ENV.tsv")
+```
+
+# Data Visualisation II
+
+## Read the data
+
+```{r}
+
+SPE_ENV <- read_tsv(file = "data/SPE_ENV.tsv")
+SPE_ENV
+```
+
+# Tasks
+
+## Task 1 - Recreate the following plot
+
+1.  **What is the data? Take a look at it and understand what is *in* the data**
+
+    The data also contains a site variable (Tanzania / Vietnam), which groups the samples.
+
+    Each row represents counts of OTUs (Operational Taxonomic Units) assigned to a particular taxon.
+
+1.  **What are the mappings? I.e. what variables are on the x-/y-axis?**
+
+    y = taxonomic group
+
+    x = OTU
+
+    fill: `site` (Tanzania vs Vietnam, shown with boxplots in different colours)
+
+2.  **Are there any colour-/fill-mappings?**
+
+    Yes: `fill = site` is used in the boxplots.
+
+    site = (Tanzania / Vietnam)
+
+3.  **What are the geoms used?**
+
+    geom_boxplot() → to show the distribution of OTU counts for each taxon, split by site.
+
+4.  **Are there any modifications to theme?**
+
+    Grey background with gridlines → `theme_grey()` (default theme)
+
+    Axis labels are set: `labs(x = "OTU_Count", y = "Taxa")`
+
+    Legend title automatically generated from the `fill = site` mapping.
+
+```{r}
+
+#make plot
+ggplot(SPE_ENV, aes(x = OTU_Count, y = Taxa, fill = site)) + #define axis
+  geom_boxplot() + #boxplot
+  labs(x = "OTU_Count", y = "Taxa", fill = "site") + #define labels
+  theme_gray(base_size = 12) + #grey background
+  theme(axis.text.y = element_text(size = 7))  # make y labels smaller
+
+```
+
+## Task 2 - Recreate the following plot
+
+1.  **What is the data? Take a look at it and understand what is *in* the data**
+
+    Each row corresponds to a measurement of temperature (`Temp`).
+
+    There is also a grouping variable `site` with two categories: Tanzania and Vietnam.
+
+    The plot shows how `Temp` varies between the two sites.
+
+2.  **What are the mappings? I.e. what variables are on the x-/y-axis?**
+
+    x-axis: `site` (categorical: Tanzania, Vietnam)
+
+    y-axis: `Temp` (continuous: numeric temperature values)
+
+3.  **Are there any colour-/fill-mappings?**
+
+    No explicit `fill` or `color` mapping has been applied.
+
+4.  **What are the geoms used?**
+
+    geom_boxplot()
+
+5.  **Are there any modifications to theme?**
+
+    The plot uses default ggplot2 theme, which is `theme_gray()`.
+
+```{r}
+#make plot
+ggplot(SPE_ENV, aes(x = site, y = Temp)) + #define x=site (vietnam, tanzania), y=temperature
+  geom_boxplot() +
+  labs(x = "site", y = "Temp") + #Define labels
+  theme_gray(base_size = 12) #grey background
+
+
+```
+
+## Task 3 - Recreate the following plot
+
+1.  **What is the data? Take a look at it and understand what is *in* the data**
+
+    The dataset contains environmental measurements: **temperature** (`Temp`), **pH**, and **site** (Tanzania vs Vietnam)
+
+    Each point represents one sample with a recorded `Temp` and `pH`, grouped by site.
+
+2.  **What are the mappings? I.e. what variables are on the x-/y-axis?**
+
+    x-axis: `Temp` (continuous numeric variable).
+
+    y-axis: `pH` (continuous numeric variable).
+
+    color: `site` (categorical: Tanzania = red, Vietnam = teal).
+
+3.  **Are there any colour-/fill-mappings?**
+
+    Yes: `color = site`.
+
+4.  **What are the geoms used?**
+
+    `geom_point()` → scatterplot points.
+
+5.  **Are there any modifications to theme?**
+
+    The plot uses the **default ggplot theme (`theme_gray`)**.
+
+```{r}
+
+#make plot
+ggplot(SPE_ENV, aes(x = Temp, y = pH, color = site)) + #define axis
+  geom_point(size=1.5) + #scatterplot
+  labs(x = "Temp", y = "pH", fill = "site") + #define labels
+  theme_gray(base_size = 12)  #grey background
+
+
+```
+
+## Task 4 - Recreate the following plot
+
+What is the data? Take a look at it and understand what is in the data?
+
+Variables include:
+
+-   `Temp` (temperature, continuous)
+
+-   `pH` (continuous)
+
+-   `site` (categorical: Tanzania vs Vietnam)
+
+-   `SampleID` (labels such as `T_2_10`, `V_21_1`, etc.)
+
+What are the mappings? I.e. what variables are on the x-/y-axis?
+
+-   **x-axis:** `Temp`
+
+-   **y-axis:** `pH`
+
+-   **color/fill:** `site` (Tanzania vs Vietnam, red vs teal)
+
+-   **label:** `SampleID` (e.g. `V_21_1`, `T_9_4`)
+
+Are there any colour-/fill-mappings?
+
+-   `color = site` (text/box border colour matches site)
+
+What are the geoms used?
+
+-   `geom_label()` → puts text labels inside boxes (instead of points).\
+
+    Each label corresponds to a sample ID positioned at its Temp/pH coordinates.
+
+Are there any modifications to theme?
+
+-   Uses the **default ggplot2 theme** → `theme_gray()` (grey background with white gridlines).
+
+```{r}
+
+#make plot
+ggplot(SPE_ENV, aes(x = Temp, y = pH, label = Samples, color = site)) + #define axis
+  geom_label(size=2.75) + 
+  labs(x = "Temp", y = "pH", color = "site", fill = "site") #define labels
+  theme_gray(base_size = 12)  #grey background
+
+
+
+
+
+```
+
+## Task 5 - Recreate the following plots
+
+### plot 1
+
+x= NH4 (sampleID)
+
+fill = site
+
+```{r}
+ggplot(SPE_ENV, aes(x = NH4, fill = site)) +
+  geom_density(color = "black") + #sets the outline (border) of the density curve to black.
+  labs(x = "NH4", y = "density", fill = "site") + #define label
+  theme_gray(base_size = 12)
+
+
+```
+
+### plot 2
+
+```{r}
+ggplot(SPE_ENV, aes(x = NH4, fill = site)) +
+  geom_density(alpha = 0.5, color = "black") + #semi-transparent filled density curves with black outline.
+  scale_x_log10() +
+  labs(x = "NH4", y = "density", fill = "site") + #define label
+  theme_gray(base_size = 12)
+```
+
+## Task 6 - Recreate the following plot
+
+x= CODs
+
+y = CODt
+
+color/fill = site
+
+geom_point() + geom_smooth()
+
+```{r}
+
+ggplot(SPE_ENV, aes(x = CODt, y = CODs, color = site)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm") +
+  labs(x = "CODt", y = "CODs", color = "site") +
+  theme_gray(base_size = 12)
+
+
+```
+
+## Task 7 - Recreate the following plot
+
+x= samples
+
+y = Taxanomic
+
+Fill = OTU count
+
+```{r}
+
+ggplot(SPE_ENV, aes(x = Taxa, y = Samples, fill = OTU_Count)) +
+  geom_tile() +
+  scale_fill_gradientn(
+    colours = c("blue", "white", "red"),
+    name = "OTU_Count"
+  ) +
+  labs(x = "Taxa", y = "Samples") +
+  theme_gray(base_size = 12) +
+  theme(
+    axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 5),
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+## Task 8 - Recreate the following plot
+
+```{r}
+
+#| echo: true
+#| eval: false
+
+
+targets <- c("Methanobacteria", "Clostridia", "Actinobacteria",
+            "Sphingobacteria", "Anaerolineae")
+SPE_ENV_targets <- SPE_ENV |>
+  filter(Taxa %in% targets)
+
+
+```
+
+```{r}
+
+library(ggridges)
+library(dplyr)
+library(ggthemes)   # optional for more themes
+
+ggplot(SPE_ENV_targets, 
+       aes(x = OTU_Count, 
+           y = Taxa, 
+           fill = Taxa)) +
+  geom_density_ridges(scale = 1.9, alpha = 0.4, color = "black") +
+  facet_wrap(~site) +
+  scale_fill_viridis_d() +  # viridis palette
+  labs(
+    title = "OTU Count Distribution for 5 Taxa Stratified by Site",
+    x = "OTU Count", 
+    y = "Taxa Identified",
+    fill = "Taxa"
+  ) +
+  theme_minimal() +  # or theme_few(), theme_classic(), etc.
+  theme(
+    plot.title = element_text(size = 15),
+    legend.position = "bottom",
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    text = element_text(family = "Arial"), 
+    axis.text.y  = element_text(size = 10), 
+    axis.text.x  = element_text(size = 10),
+    legend.title = element_text(size = 10),
+    legend.text  = element_text(size = 8)
+  )
+```
+
+## Task 9 - GROUP ASSIGNMENT
+
+*For this assignment you and your group are to apply what you have learned in the two data visualisation labs. The task is to be creative and make a really nice plot using the `SPE`- and `ENV`-data sets or a relevant subset hereof, remember to include how you arrive at subsets of the data in your assignment*
