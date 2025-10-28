@@ -158,3 +158,35 @@ Takes out a specific number of rows from the dataset but randomly. If you only v
 meta_data |>
   slice_sample(n = 10)
 ```
+
+# R packages
+
+-   R packages are an `industry-wide` practice for ensuring `reproducibility` and `consistency` in data analysis.
+
+## What is an R package?
+
+-   A `shareable` collection of `documented` code and/or data
+
+-   A collection of prespecified files with prespecified functions
+
+-   Namespace = the name of space you are working with
+
+    -   Eg. in tidyverse you can write `mean`, `mutate`, `length` etc. which is defined in the namespace of the `Tidyverse` package
+
+    -   It is possible to overwrite the namespace if you define new functions in the script that share the same name as the one in the namespace. If the tidyverse package is loaded first and then the function, the namespace will be overwritten.
+
+## Loading R packages
+
+-   Makes functions/objects available.
+
+-   Requires prefixing function/object with the package name: `::`.
+
+-   This secures that if the namespace if overwritten it is specified from which package the function should be taken
+
+```{r}
+dplyr::mutate()
+```
+
+## Attaching 
+
+## Building R packages 
