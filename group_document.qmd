@@ -44,3 +44,13 @@ some text to go with the code
 ```
 
 # s205875 - Sigrid
+
+### New analysis
+
+some text to go with the code
+
+```{r}
+2+10
+```
+
+# 
