@@ -25,8 +25,6 @@ Packages that are a part of tidyverse:
 -   `forcats`
 -   `lubridate`
 
-# Loading data
-
 ```{r}
 library("ggplot2")
 library("dplyr")
@@ -37,6 +35,21 @@ library("tibble")
 library("stringr")
 library("forcats")
 library("lubridate")
+```
+
+# Loading data
+
+## Get data from webpage
+
+```{r}
+# Here is an example with the BLOSUM62 matrix data
+download.file(
+  url = "https://raw.githubusercontent.com/rdpstaff/AlignmentTools/master/src/data/blosum62.txt",
+  destfile = "data/_raw/blosum62.txt")
+bl62 <- read_table(
+  file = "data/_raw/blosum62.txt",
+  comment = "#")
+bl62
 ```
 
 # Data wrangling
@@ -70,9 +83,35 @@ meta_data |>
          data = _)
 ```
 
+## Selection of data
+
+### Select all numeric variables
+
+You can use the `select_if` command to select data that fulfills a specific conditions. Here it is all the variables that is numeric
+
+```{r}
+bl62_pca <- bl62 |>
+  select_if(is.numeric) |>
+  prcomp(center = TRUE,
+         scale = TRUE)
+bl62_pca |>
+  str()
+```
+
+## Augment
+
+When augmenting the data, the regression information will no longer be attached to a specific datapoint but exists as a separate linear model (OBS check if it is true).
+
+```{r}
+bl62_pca_aug <- bl62_pca |>
+  augment(bl62)
+bl62_pca_aug
+```
+
 # Functional programming
 
 ## Call functions on objects
+
 # Data visualisation
 
 # Functional programming
@@ -92,8 +131,7 @@ x <- 2
 double_the_value(value = x)
 ```
 
-The result can be "catched" by assigning it to a variable
-Using the function: The result can be "catched" by asssigning it to a vairalbe
+The result can be "catched" by assigning it to a variable Using the function: The result can be "catched" by asssigning it to a vairalbe
 
 ```{r}
 y <- double_the_value(value = x)
@@ -101,7 +139,6 @@ y
 ```
 
 # Different commands
-
 
 # Different general commands
 
