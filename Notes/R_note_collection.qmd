@@ -108,10 +108,6 @@ bl62_pca_aug <- bl62_pca |>
 bl62_pca_aug
 ```
 
-# Functional programming
-
-## Call functions on objects
-
 # Data visualisation
 
 # Functional programming
@@ -137,8 +133,6 @@ The result can be "catched" by assigning it to a variable Using the function: Th
 y <- double_the_value(value = x)
 y
 ```
-
-# Different commands
 
 # Different general commands
 
@@ -169,11 +163,15 @@ meta_data |>
 
 -   A collection of prespecified files with prespecified functions
 
--   Namespace = the name of space you are working with
+### **Namespace**
 
-    -   Eg. in tidyverse you can write `mean`, `mutate`, `length` etc. which is defined in the namespace of the `Tidyverse` package
+-   The name of space you are working with
 
-    -   It is possible to overwrite the namespace if you define new functions in the script that share the same name as the one in the namespace. If the tidyverse package is loaded first and then the function, the namespace will be overwritten.
+-   The namespace contains the names of the variables and functions that is going to be available for that specific package
+
+-   Eg. in tidyverse you can write `mean`, `mutate`, `length` etc. which is defined in the namespace of the `Tidyverse` package
+
+-   It is possible to overwrite the namespace if you define new functions in the script that share the same name as the one in the namespace. If the tidyverse package is loaded first and then the function, the namespace will be overwritten.
 
 ## Loading R packages
 
@@ -187,6 +185,18 @@ meta_data |>
 dplyr::mutate()
 ```
 
-## Attaching 
+## Attaching
 
-## Building R packages 
+## Building R packages
+
+# GitHub
+
+## Remote
+
+-   A way to connect to GitHub from a remote
+
+```{r}
+
+```
+
+# Shiny app
